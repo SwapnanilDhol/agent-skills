@@ -1,0 +1,8 @@
+{
+  "description": "<LOCALIZED_DESCRIPTION>",
+  "keywords": "<COMMA_SEPARATED_KEYWORDS_MAX_100_CHARS>",
+  "marketingUrl": "https://example.com",
+  "supportUrl": "https://example.com/support",
+  "whatsNew": "<LOCALIZED_WHATS_NEW>",
+  "promotionalText": "<LOCALIZED_PROMOTIONAL_TEXT_MAX_170_CHARS>"
+}

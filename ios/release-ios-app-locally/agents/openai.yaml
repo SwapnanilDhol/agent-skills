@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release iOS App Locally"
+  short_description: "Archive and upload reproducible iOS releases"
+  default_prompt: "Use $release-ios-app-locally to prepare, archive, upload, validate, and finish an iOS App Store build locally."
