@@ -1,0 +1,11 @@
+{
+  "appName": "MyApp",
+  "appId": "1234567890",
+  "platform": "IOS",
+  "bundleId": "com.example.myapp",
+  "xcodeCloudWorkflowId": null,
+  "collector": null,
+  "artifactGlob": ".tmp/asc-morning/*",
+  "officialAnalyticsScript": null,
+  "notes": "Leave collector null to use generic asc commands from the skill. Copy Neon collectors from ColorPicker and set collector to a make target for full parity."
+}
