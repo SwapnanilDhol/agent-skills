@@ -88,6 +88,16 @@ UI-test:
 | Locale | short Latin, long Latin, CJK, RTL when supported |
 | State | empty, selected, loading, success, denied permission |
 
+Reference catalogs:
+
+- [Goaley iPhone onboarding catalog](visual-catalogs/goaley-iphone-onboarding.jpg)
+- [Goaley iPad onboarding catalog](visual-catalogs/goaley-ipad-onboarding.jpg)
+
+Use these catalogs to compare visual pacing, hero scale, capped content width,
+selection states, and footer rhythm across phone and iPad. They document a
+real, verified flow; do not copy the product name, artwork, or copy into another
+app.
+
 Physical-device checks are required for haptics, keyboard animation races,
 high-refresh-rate smoothness, notification authorization, Settings round-trip,
 and purchase-sheet behavior.
