@@ -32,6 +32,8 @@ KOREAN_FONT = Path("/System/Library/Fonts/AppleSDGothicNeo.ttc")
 TEXT_COLOR = (8, 8, 12)
 EYEBROW_COLOR = (104, 104, 110)
 EDITORIAL_BORDER_COLOR = (232, 232, 234)
+CENTERED_ACCENT_COLOR = (48, 66, 235)
+CENTERED_SUBTITLE_COLOR = (70, 70, 76)
 MIN_TEXT_CONTRAST = 4.5
 
 
@@ -80,6 +82,22 @@ def fit_font(
 ) -> ImageFont.FreeTypeFont:
     for size in range(preferred_size, minimum_size - 1, -2):
         font = load_font(size, weight)
+        if text_width(draw, text, font) <= max_width:
+            return font
+    raise ValueError(f'Text is too long for the template: "{text}"')
+
+
+def fit_editorial_font(
+    draw: ImageDraw.ImageDraw,
+    text: str,
+    preferred_size: int,
+    minimum_size: int,
+    max_width: int,
+    weight: str,
+    locale: str,
+) -> ImageFont.FreeTypeFont:
+    for size in range(preferred_size, minimum_size - 1, -2):
+        font = load_editorial_font(size, weight, locale)
         if text_width(draw, text, font) <= max_width:
             return font
     raise ValueError(f'Text is too long for the template: "{text}"')
@@ -279,28 +297,131 @@ def draw_editorial_copy(canvas: Image.Image, eyebrow: str, headline: str, locale
     return headline_y + len(headline_lines) * line_height
 
 
+def draw_centered_line(
+    draw: ImageDraw.ImageDraw,
+    canvas: Image.Image,
+    line: str,
+    emphasis: str,
+    font: ImageFont.FreeTypeFont,
+    y: int,
+) -> None:
+    width = text_width(draw, line, font)
+    x = (canvas.width - width) // 2
+    bounds = draw.textbbox((x, y), line, font=font)
+    validate_text_contrast(canvas, bounds, "Headline")
+    draw.text((x, y), line, font=font, fill=TEXT_COLOR)
+    if emphasis and emphasis in line:
+        prefix, _ = line.split(emphasis, 1)
+        accent_x = x + text_width(draw, prefix, font)
+        if contrast_ratio(CENTERED_ACCENT_COLOR, (255, 255, 255)) < MIN_TEXT_CONTRAST:
+            raise ValueError("Centered accent color does not meet minimum contrast")
+        draw.text(
+            (accent_x, y),
+            emphasis,
+            font=font,
+            fill=CENTERED_ACCENT_COLOR,
+        )
+
+
+def draw_centered_copy(
+    canvas: Image.Image,
+    headline: str,
+    emphasis: str,
+    subtitle: str,
+    locale: str,
+) -> int:
+    """Draw a restrained white campaign hierarchy with one cobalt accent."""
+    draw = ImageDraw.Draw(canvas)
+    is_landscape = canvas.width > canvas.height
+    horizontal_margin = round(canvas.width * 0.09)
+    max_width = canvas.width - horizontal_margin * 2
+    headline_size = 116 if is_landscape else 148
+    headline_minimum = 80 if is_landscape else 96
+    headline_y = 72 if is_landscape else 128
+    headline_gap = 16 if is_landscape else 18
+    subtitle_gap = 50 if is_landscape else 78
+    subtitle_size = 46 if is_landscape else 56
+    subtitle_leading = 14 if is_landscape else 20
+
+    if emphasis and emphasis in headline:
+        lead, tail = headline.split(emphasis, 1)
+        lines = [line for line in (lead.strip(), f"{emphasis}{tail}".strip()) if line]
+    else:
+        initial_font = load_editorial_font(headline_size, "Bold", locale)
+        lines = wrap_text(draw, headline, initial_font, max_width, 2)
+
+    if len(lines) > 2:
+        raise ValueError("Centered headline exceeds two lines; shorten the copy")
+
+    fonts = [
+        fit_editorial_font(
+            draw,
+            line,
+            headline_size,
+            headline_minimum,
+            max_width,
+            "Bold",
+            locale,
+        )
+        for line in lines
+    ]
+
+    line_y = headline_y
+    for line, font in zip(lines, fonts):
+        draw_centered_line(draw, canvas, line, emphasis, font, line_y)
+        line_y += font.size + headline_gap
+
+    subtitle_y = line_y + subtitle_gap
+    subtitle_font = load_editorial_font(subtitle_size, "Semibold", locale)
+    subtitle_lines = wrap_text(draw, subtitle, subtitle_font, max_width, 3)
+    subtitle_line_height = subtitle_font.size + subtitle_leading
+    if contrast_ratio(CENTERED_SUBTITLE_COLOR, (255, 255, 255)) < MIN_TEXT_CONTRAST:
+        raise ValueError("Centered subtitle color does not meet minimum contrast")
+    for index, line in enumerate(subtitle_lines):
+        line_width = text_width(draw, line, subtitle_font)
+        draw.text(
+            (
+                (canvas.width - line_width) // 2,
+                subtitle_y + index * subtitle_line_height,
+            ),
+            line,
+            font=subtitle_font,
+            fill=CENTERED_SUBTITLE_COLOR,
+        )
+    return subtitle_y + len(subtitle_lines) * subtitle_line_height
+
+
 def render(args: argparse.Namespace) -> None:
     canvas_size = ACCEPTED_SIZES[args.size]
     background_path = Path(args.background).expanduser().resolve()
     device_path = Path(args.device_image).expanduser().resolve()
     output_path = Path(args.output).expanduser().resolve()
 
-    if args.style == "editorial":
+    if args.style in ("editorial", "centered"):
         canvas = Image.new("RGB", canvas_size, "white")
-        border_inset = 6
-        border_width = max(2, round(canvas.width / 440))
-        ImageDraw.Draw(canvas).rounded_rectangle(
-            (
-                border_inset,
-                border_inset,
-                canvas.width - border_inset - 1,
-                canvas.height - border_inset - 1,
-            ),
-            radius=96,
-            outline=EDITORIAL_BORDER_COLOR,
-            width=border_width,
-        )
-        draw_editorial_copy(canvas, args.eyebrow, args.headline, args.locale)
+        if args.style == "editorial":
+            border_inset = 6
+            border_width = max(2, round(canvas.width / 440))
+            ImageDraw.Draw(canvas).rounded_rectangle(
+                (
+                    border_inset,
+                    border_inset,
+                    canvas.width - border_inset - 1,
+                    canvas.height - border_inset - 1,
+                ),
+                radius=96,
+                outline=EDITORIAL_BORDER_COLOR,
+                width=border_width,
+            )
+            draw_editorial_copy(canvas, args.eyebrow, args.headline, args.locale)
+        else:
+            draw_centered_copy(
+                canvas,
+                args.headline,
+                args.emphasis,
+                args.subtitle,
+                args.locale,
+            )
     else:
         background = Image.open(background_path).convert("RGB")
         background = background.resize(canvas_size, Image.Resampling.LANCZOS)
@@ -357,7 +478,7 @@ def render(args: argparse.Namespace) -> None:
     phone_width = round(canvas.width * args.phone_width_ratio)
     phone_height = round(device.height * phone_width / device.width)
     phone_y = round(canvas.height * args.phone_top_ratio)
-    if args.style == "editorial":
+    if args.style in ("editorial", "centered"):
         bottom_margin = round(canvas.height * 0.025)
         available_height = canvas.height - phone_y - bottom_margin
         if phone_height > available_height:
@@ -396,7 +517,11 @@ def parse_args() -> argparse.Namespace:
         default="Designed for You",
         help="Short secondary line used by the editorial style",
     )
-    parser.add_argument("--style", choices=("atmospheric", "editorial"), default="atmospheric")
+    parser.add_argument(
+        "--style",
+        choices=("atmospheric", "editorial", "centered"),
+        default="atmospheric",
+    )
     parser.add_argument("--locale", default="en-US")
     parser.add_argument("--output", required=True)
     parser.add_argument(
@@ -413,10 +538,21 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--phone-width-ratio", type=float)
     parser.add_argument("--phone-top-ratio", type=float)
     args = parser.parse_args()
+    is_landscape = ACCEPTED_SIZES[args.size][0] > ACCEPTED_SIZES[args.size][1]
     if args.phone_width_ratio is None:
-        args.phone_width_ratio = 0.75 if args.style == "editorial" else 0.86
+        if args.style == "editorial":
+            args.phone_width_ratio = 0.88 if is_landscape else 0.75
+        elif args.style == "centered":
+            args.phone_width_ratio = 0.90 if is_landscape else 0.72
+        else:
+            args.phone_width_ratio = 0.86
     if args.phone_top_ratio is None:
-        args.phone_top_ratio = 0.265 if args.style == "editorial" else 0.255
+        if args.style == "editorial":
+            args.phone_top_ratio = 0.25 if is_landscape else 0.265
+        elif args.style == "centered":
+            args.phone_top_ratio = 0.29 if is_landscape else 0.28
+        else:
+            args.phone_top_ratio = 0.255
     if not 0.65 <= args.phone_width_ratio <= 0.95:
         parser.error("--phone-width-ratio must be between 0.65 and 0.95")
     if not 0.20 <= args.phone_top_ratio <= 0.40:

@@ -136,6 +136,90 @@ The compositor emits opaque RGB PNGs, validates exact dimensions and 4.5:1 text
 contrast, and supports accepted iPhone portrait and 13-inch iPad portrait or
 landscape canvases. Keep the review sheet outside the upload directory.
 
+## Establish the campaign direction
+
+Start with the deterministic `centered` style unless the product already has an
+approved visual system. It uses a white canvas, a centered two-line SF Rounded
+headline, one short cobalt phrase, a larger centered subtitle with fixed
+leading, and a fully contained device. On landscape iPad it uses a smaller type
+scale and a wider device while preserving the same hierarchy.
+
+Prefer typographic restraint over decoration:
+
+- use one accent phrase, not several colored words;
+- create hierarchy with scale, line spacing, and deliberate title-to-subtitle
+  spacing;
+- keep the subtitle comfortably readable at contact-sheet scale;
+- keep the complete phone or tablet visible, including its bottom frame;
+- keep device scale and placement consistent unless a recorded feature-specific
+  exception improves the visible proof;
+- reject gradients, generated backgrounds, textures, and decorative stock art
+  when a clean composition communicates the feature more clearly.
+
+Do not use image generation for campaign text, device frames, captured UI, or
+background experiments after the direction resolves to deterministic type. A
+compositor proof is faster, preserves exact copy and spacing, and cannot mutate
+the product UI.
+
+Write for the product's real audience and visible capabilities. Avoid implying
+licenses, certifications, professional authority, safety guarantees, or other
+high-stakes uses unless the product has them and the claim is approved. For AI
+features, show the original source or input, make provenance visible when the UI
+supports it, and describe organization or assistance rather than guaranteed
+correctness. Screenshot fixtures must not spend model tokens or depend on a live
+AI response.
+
+Plan a set with distinct jobs. Lead with the strongest hero, then cover unique
+high-value features such as primary workflows, sharing, widgets, notifications,
+AI assistance, maps, or Dark appearance when the app actually ships them. Remove
+screens that repeat the hero without adding evidence.
+
+## Enforce approval boundaries
+
+Render one representative proof before producing a full set. Review it at full
+resolution and contact-sheet scale. Full resolution exposes clipping, stale
+state, and truncation; thumbnail scale exposes weak hierarchy.
+
+Treat each of these as a new approval boundary:
+
+1. campaign direction and one proof;
+2. complete phone set;
+3. complete tablet set;
+4. App Store Connect upload.
+
+Approval of a direction does not approve every screenshot. Approval of one
+platform does not approve another. Any material copy, camera, detent, fixture,
+appearance, device-scale, or order change resets approval for the affected
+asset. Keep experiments outside the approved manifest and do not commit rejected
+PNGs; preserve reusable reasoning in repository guidance instead.
+
+## Freeze authentic capture state
+
+Use production views with DEBUG-only deterministic routing. Record the exact
+sheet detent, inspector state, tab, scroll position, map camera, fixture, device,
+appearance, and build in `captureBrief`.
+
+- Choose a sheet detent that preserves meaningful background context while
+  keeping the featured detail readable. Freeze it after approval.
+- Apply map cameras after the final sheet, sidebar, or inspector geometry has
+  settled. Judge centering against the unobscured visible map, not the full
+  framebuffer behind an overlay.
+- Seed long and narrow values deliberately. Treat truncation in tiles, sidebars,
+  split views, and accessibility-size text as a product bug, not a compositor
+  problem.
+- Capture Dark appearance from the real app. Run the standard Light preflight,
+  switch explicitly to Dark for that shot, then restore Light.
+- Capture notifications as authentic system UI. Cropping and arranging captured
+  cards is acceptable; recreating their text or chrome is not.
+- Render real WidgetKit output with deterministic preview data. Do not imitate
+  widgets in the compositor.
+
+On iPad, verify onboarding, sidebars, inspectors, sheets, and maps independently
+instead of assuming the iPhone layout merely scales. Reject accidental
+width-triggered split layouts. If Simulator writes a landscape framebuffer with
+rotated pixels, normalize it with a lossless 90-degree rotation and verify the
+exact accepted landscape dimensions; never crop or stretch it into compliance.
+
 ## Verify every output
 
 Perform both programmatic and visual review:
@@ -189,6 +273,13 @@ asc screenshots upload \
 Repeat without `--dry-run`, then list the remote set and compare filename order,
 dimensions, delivery state, and MD5 checksum. Screenshot upload does not grant
 permission to submit the app version for review.
+
+Upload one approved display type from an exact staging directory containing only
+its ordered files. Wait until every replacement asset reports `COMPLETE` before
+deleting a legacy display-type set, then query App Store Connect again to verify
+the final count. Record version, locale, display type, filenames, dimensions,
+processing state, and upload date in the repository. Never infer permission to
+submit for App Review from permission to replace screenshots.
 
 ## Freshness rules
 
