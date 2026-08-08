@@ -1,0 +1,4 @@
+interface:
+  display_name: "Premium Onboarding"
+  short_description: "Design and implement polished iOS onboarding flows"
+  default_prompt: "Use $premium-onboarding to design and implement a polished, adaptive onboarding flow for my iOS app."
