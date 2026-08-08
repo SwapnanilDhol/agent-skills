@@ -1,0 +1,34 @@
+{
+  "appName": "Example App",
+  "bundleIdentifier": "com.example.app",
+  "screenshot": {
+    "launchArguments": ["-screenshotMode"],
+    "routeArgument": "-screenshotRoute",
+    "fixtureSourceDir": "app_store/fixtures/images",
+    "fixtureDestination": "Documents/ScreenshotFixtures",
+    "rawDir": "app_store/screenshots/raw/en-US",
+    "settleSeconds": 4,
+    "removeTestRunners": true
+  },
+  "presentation": {
+    "landscape": false,
+    "postBootSettleSeconds": 6
+  },
+  "widget": {
+    "extensionBundleIdentifier": "com.example.app.WidgetExtension",
+    "kind": "com.example.app.primary-widget",
+    "appGroupIdentifier": "group.com.example.app",
+    "preferenceDomain": "group.com.example.app",
+    "preferenceOverrides": {
+      "screenshotWidgetEntityID": "00000000-0000-0000-0000-000000000001",
+      "isPremiumEnabled": true
+    },
+    "sizes": ["small", "medium", "large"],
+    "appSlots": 8
+  },
+  "shots": [
+    {"slug": "01-overview", "route": "overview"},
+    {"slug": "02-detail", "route": "detail"},
+    {"slug": "03-widget", "surface": "home-screen", "settleSeconds": 8}
+  ]
+}

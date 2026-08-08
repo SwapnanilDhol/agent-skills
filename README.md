@@ -10,6 +10,7 @@ workflows.
 agent-skills/
 ├── ios/                 # App Store Connect, Xcode, release workflows
 │   ├── asc-morning-brief/
+│   ├── generate-app-store-screenshots/
 │   └── release-ios-app-locally/
 ├── android/             # reserved
 ├── web/                 # reserved
@@ -22,6 +23,7 @@ agent-skills/
 | Skill | Category | Invoke | Description |
 |---|---|---|---|
 | [`asc-morning-brief`](ios/asc-morning-brief/) | iOS | `/asc-morning-brief` | App Store Connect morning executive brief (acquisition, revenue, crashes, ratings, release health) |
+| [`generate-app-store-screenshots`](ios/generate-app-store-screenshots/) | iOS | `/generate-app-store-screenshots` | Deterministic Simulator capture, widget staging, framing, review, validation, and App Store Connect upload |
 | [`release-ios-app-locally`](ios/release-ios-app-locally/) | iOS | `/release-ios-app-locally` | Reproducible local App Store archive, upload, validation, tagging, and cleanup workflow |
 
 ## Install

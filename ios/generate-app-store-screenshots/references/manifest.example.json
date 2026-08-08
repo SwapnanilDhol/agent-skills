@@ -1,0 +1,22 @@
+{
+  "locale": "en-US",
+  "size": "1320x2868",
+  "style": "atmospheric",
+  "backgroundOpacity": 0.8,
+  "screenshots": [
+    {
+      "order": 1,
+      "slug": "overview",
+      "feature": "Feature overview",
+      "status": "ready",
+      "deviceImage": "app_store/screenshots/framed/en-US/01-overview_framed.png",
+      "headline": "Make progress visible",
+      "emphasis": "visible",
+      "subtitle": "Use truthful supporting copy that matches the captured interface.",
+      "output": "app_store/screenshots/generated/en-US/01-overview.png",
+      "sourceImage": "app_store/screenshots/raw/en-US/01-overview.png",
+      "sourceCredit": "Live capture from the current screenshot build",
+      "captureBrief": "Record the device, build, seeded state, route, and any non-obvious capture setup."
+    }
+  ]
+}
