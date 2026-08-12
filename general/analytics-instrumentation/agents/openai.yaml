@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analytics Instrumentation"
+  short_description: "Design lean, decision-grade product analytics"
+  default_prompt: "Use $analytics-instrumentation to audit this app and implement lean, high-signal analytics."

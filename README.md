@@ -3,11 +3,13 @@
 Personal Agent Skills library for Swapnanil Dhol. Skills follow the portable
 `SKILL.md` convention and can be installed in Codex, Cursor, and compatible agents.
 
-Skills are grouped by platform so the same repo can hold iOS, Android, and web
-workflows.
+Skills are grouped by platform, with a `general/` category for workflows that
+apply across apps, APIs, and backend services.
 
 ```text
 agent-skills/
+├── general/             # Cross-platform product and engineering workflows
+│   └── analytics-instrumentation/
 ├── ios/                 # App Store Connect, Xcode, release workflows
 │   ├── asc-morning-brief/
 │   ├── generate-app-store-screenshots/
@@ -23,6 +25,7 @@ agent-skills/
 
 | Skill | Category | Invoke | Description |
 |---|---|---|---|
+| [`analytics-instrumentation`](general/analytics-instrumentation/) | General | `/analytics-instrumentation` | Cost-conscious audit, design, implementation, and validation of decision-grade product analytics |
 | [`asc-morning-brief`](ios/asc-morning-brief/) | iOS | `/asc-morning-brief` | App Store Connect morning executive brief (acquisition, revenue, crashes, ratings, release health) |
 | [`generate-app-store-screenshots`](ios/generate-app-store-screenshots/) | iOS | `/generate-app-store-screenshots` | Deterministic Simulator capture, widget staging, framing, review, validation, and App Store Connect upload |
 | [`premium-onboarding`](ios/premium-onboarding/) | iOS | `/premium-onboarding` | Product narrative, adaptive iPhone/iPad layout, state architecture, motion, permissions, paywalls, accessibility, analytics, and QA for polished onboarding |
