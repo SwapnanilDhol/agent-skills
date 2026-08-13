@@ -16,6 +16,11 @@ Use this skill when a development build must coexist with the production App
 Store build. Do not start by editing the project. First generate an evidence
 report, then make paired changes, then run the verifier.
 
+For a complete clean-room implementation, read
+`references/one-shot-runbook.md` before taking any action. Use
+`scripts/bootstrap-app-runbook.sh` to create the evidence record inside the
+host app; do not rely on conversational memory as the runbook.
+
 ## Non-negotiable model
 
 Use one app target with three configurations:
@@ -47,29 +52,31 @@ group.*              ↔ production companion entitlements
    from `origin/main`, preserve it and audit a clean worktree at the intended
    remote commit; never infer production readiness from a stale local branch.
 2. Run `scripts/discover-identities.sh /path/to/app --output /tmp/app-identities.json`.
-3. Treat the report as facts. Do not guess target names, bundle IDs, groups,
+3. Create the host-app evidence record with
+   `scripts/bootstrap-app-runbook.sh`; fill it continuously during the work.
+4. Treat the report as facts. Do not guess target names, bundle IDs, groups,
    schemes, extensions, or service behavior.
-4. For a new app, run `scripts/bootstrap-identity-files.sh` into a new output
+5. For a new app, run `scripts/bootstrap-identity-files.sh` into a new output
    directory and wire the generated files into Xcode.
-5. For an old app, preserve the Release identity and data paths; add the
+6. For an old app, preserve the Release identity and data paths; add the
    development identity and Preview configuration additively.
-6. Apply the file-by-file checklist in `references/implementation-checklist.md`.
-7. Make explicit service decisions using `references/service-isolation.md`.
-8. Generate the development app icon using
+7. Apply the file-by-file checklist in `references/implementation-checklist.md`.
+8. Make explicit service decisions using `references/service-isolation.md`.
+9. Generate the development app icon using
    `references/development-app-icon.md`. Derive its wireframe from the real
    production icon; do not use a generic `DEV` badge.
-9. Run `scripts/verify-identities.sh /path/to/app`. It must pass before any
+10. Run `scripts/verify-identities.sh /path/to/app`. It must pass before any
    signing or CI work proceeds.
-10. Configure Apple App IDs, app groups, companion IDs, capabilities, and
+11. Configure Apple App IDs, app groups, companion IDs, capabilities, and
    registered-device profiles. Never silently reuse production entitlements.
-11. Configure Codemagic: `device-preview` uses `Preview`; TestFlight uses
+12. Configure Codemagic: `device-preview` uses `Preview`; TestFlight uses
     `Release`.
-12. If Slack delivery is required, follow
+13. If Slack delivery is required, follow
     `references/slack-codemagic-handoff.md`, register the app in Indie Ops, and
     run `scripts/verify-slack-preview-handoff.sh`.
-13. Build and inspect all three configurations. Run
+14. Build and inspect all three configurations. Run
     `scripts/verify-built-products.sh` against the resulting app bundles.
-14. Install the development and production apps together and execute the
+15. Install the development and production apps together and execute the
     host-specific smoke tests. Record evidence in the app runbook.
 
 ## Deterministic tooling
@@ -88,6 +95,7 @@ Read the variant references only when needed:
 
 - [legacy-app-migration.md](references/legacy-app-migration.md)
 - [new-app-bootstrap.md](references/new-app-bootstrap.md)
+- [one-shot-runbook.md](references/one-shot-runbook.md)
 - [preview-configuration.md](references/preview-configuration.md)
 - [service-isolation.md](references/service-isolation.md)
 - [apple-signing-and-capabilities.md](references/apple-signing-and-capabilities.md)

@@ -1,0 +1,6 @@
+interface:
+  display_name: "ASC Morning Brief"
+  short_description: "Summarize current App Store Connect performance"
+  default_prompt: "Use $asc-morning-brief to produce an evidence-backed App Store Connect morning brief for the configured iOS app."
+policy:
+  allow_implicit_invocation: false

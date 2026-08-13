@@ -6,7 +6,6 @@ description: >-
   release health). Use when the user asks for latest App Store numbers, ASC
   analytics, morning brief, download/conversion performance, or a similar
   report for Neon or another configured iOS app.
-disable-model-invocation: true
 ---
 
 # ASC Morning Executive Brief

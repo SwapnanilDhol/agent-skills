@@ -37,7 +37,16 @@ agent-skills/
 
 ### Codex
 
-Install an individual skill into `~/.codex/skills` with Codex's bundled skill
+Install every skill from this checkout into both Codex and Cursor:
+
+```bash
+./scripts/install-all.sh
+```
+
+This creates symlinks, so future pulls update both agents without copying
+files. Restart/reopen the agent if a new skill does not appear immediately.
+
+To install an individual skill from GitHub instead, use Codex's bundled skill
 installer. For example:
 
 ```bash
@@ -123,8 +132,8 @@ $release-ios-app-locally
 Or ask naturally once the skill is installed, e.g. “run the ASC morning brief
 for the latest numbers.”
 
-`asc-morning-brief` is marked `disable-model-invocation: true`, so it only loads
-when you invoke it (or explicitly ask the agent to use that skill).
+`asc-morning-brief` loads only when explicitly invoked; its standard
+`agents/openai.yaml` policy disables implicit invocation.
 
 ### Per-app config (ASC morning brief)
 

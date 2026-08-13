@@ -5,6 +5,8 @@ command output in the app's runbook.
 
 ## Build configurations
 
+- [ ] an app-local dual-identity runbook was generated from the skill template
+      and contains the remote baseline plus the production snapshot;
 - [ ] the exact source commit is recorded after `git fetch`; a stale/dirty local
       `main` is not used as evidence for the remote build;
 - [ ] `Debug`, `Preview`, and `Release` exist on the app target.
