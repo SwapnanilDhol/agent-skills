@@ -5,7 +5,8 @@ description: >-
   development and production identities across app targets, widgets,
   extensions, app groups, plists, URL schemes, services, and Codemagic.
   Use when creating or reviewing a two-bundle-ID setup for a new or existing
-  iOS app, or when preparing side-by-side development and App Store installs.
+  iOS app, preparing side-by-side development and App Store installs, or wiring
+  the signed Preview build into an Indie Ops/Slack delivery loop.
 ---
 
 # Two-bundle-ID workflow
@@ -40,7 +41,10 @@ group.*              ↔ production companion entitlements
 
 ## Required sequence
 
-1. Read the host `AGENTS.md` and the relevant references below.
+1. Read the host `AGENTS.md` and the relevant references below. Fetch the
+   remote first. If the existing checkout is dirty or its local `main` differs
+   from `origin/main`, preserve it and audit a clean worktree at the intended
+   remote commit; never infer production readiness from a stale local branch.
 2. Run `scripts/discover-identities.sh /path/to/app --output /tmp/app-identities.json`.
 3. Treat the report as facts. Do not guess target names, bundle IDs, groups,
    schemes, extensions, or service behavior.
@@ -56,9 +60,12 @@ group.*              ↔ production companion entitlements
    registered-device profiles. Never silently reuse production entitlements.
 10. Configure Codemagic: `device-preview` uses `Preview`; TestFlight uses
     `Release`.
-11. Build and inspect all three configurations. Run
+11. If Slack delivery is required, follow
+    `references/slack-codemagic-handoff.md`, register the app in Indie Ops, and
+    run `scripts/verify-slack-preview-handoff.sh`.
+12. Build and inspect all three configurations. Run
     `scripts/verify-built-products.sh` against the resulting app bundles.
-12. Install the development and production apps together and execute the
+13. Install the development and production apps together and execute the
     host-specific smoke tests. Record evidence in the app runbook.
 
 ## Deterministic tooling
@@ -80,6 +87,7 @@ Read the variant references only when needed:
 - [preview-configuration.md](references/preview-configuration.md)
 - [service-isolation.md](references/service-isolation.md)
 - [apple-signing-and-capabilities.md](references/apple-signing-and-capabilities.md)
+- [slack-codemagic-handoff.md](references/slack-codemagic-handoff.md)
 - [implementation-checklist.md](references/implementation-checklist.md)
 
 ## Low-cost execution
@@ -94,4 +102,6 @@ production identity, or project corruption.
 
 Do not call an app complete unless the verifier passes, all companion targets
 are paired, the production settings match the pre-migration snapshot, both
-identities install side-by-side, and the app runbook contains the evidence.
+identities install side-by-side, the app runbook contains the evidence, and—if
+Slack delivery is in scope—the cross-repository handoff verifier and one real
+Slack-triggered artifact both pass.

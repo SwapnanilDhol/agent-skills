@@ -44,6 +44,20 @@ if app_target
   failures << "Debug and Release entitlements are not split" if debug["CODE_SIGN_ENTITLEMENTS"].to_s == release["CODE_SIGN_ENTITLEMENTS"].to_s
   failures << "Debug and Release display names are not split" if debug["INFOPLIST_KEY_CFBundleDisplayName"].to_s == release["INFOPLIST_KEY_CFBundleDisplayName"].to_s
   failures << "Debug and Release app icons are not split" if debug["ASSETCATALOG_COMPILER_APPICON_NAME"].to_s == release["ASSETCATALOG_COMPILER_APPICON_NAME"].to_s
+  debug_group = debug["APP_GROUP_IDENTIFIER"].to_s
+  release_group = release["APP_GROUP_IDENTIFIER"].to_s
+  if !debug_group.empty? || !release_group.empty?
+    failures << "Debug app group is missing" if debug_group.empty?
+    failures << "Release app group is missing" if release_group.empty?
+    failures << "Debug and Release app groups are not split" if !debug_group.empty? && debug_group == release_group
+  end
+  debug_scheme = debug["URL_SCHEME"].to_s
+  release_scheme = release["URL_SCHEME"].to_s
+  if !debug_scheme.empty? || !release_scheme.empty?
+    failures << "Debug URL scheme is missing" if debug_scheme.empty?
+    failures << "Release URL scheme is missing" if release_scheme.empty?
+    failures << "Debug and Release URL schemes are not split" if !debug_scheme.empty? && debug_scheme == release_scheme
+  end
   failures << "Preview must define PREVIEW or DEVELOPMENT" unless preview["SWIFT_ACTIVE_COMPILATION_CONDITIONS"].to_s.match?(/(?:PREVIEW|DEVELOPMENT)/)
 end
 
@@ -55,6 +69,26 @@ targets.each do |target|
   production = target_settings.dig("Release", "PRODUCT_BUNDLE_IDENTIFIER")
   failures << "#{target}: development and production bundle IDs are equal" if development == production
   failures << "#{target}: Preview does not equal Debug bundle ID" unless target_settings.dig("Preview", "PRODUCT_BUNDLE_IDENTIFIER") == development
+
+  development_entitlements = target_settings.dig("Debug", "CODE_SIGN_ENTITLEMENTS").to_s
+  production_entitlements = target_settings.dig("Release", "CODE_SIGN_ENTITLEMENTS").to_s
+  if !development_entitlements.empty? || !production_entitlements.empty?
+    failures << "#{target}: development entitlements are missing" if development_entitlements.empty?
+    failures << "#{target}: production entitlements are missing" if production_entitlements.empty?
+    if !development_entitlements.empty? && development_entitlements == production_entitlements
+      failures << "#{target}: development and production entitlements are not split"
+    end
+  end
+
+  development_group = target_settings.dig("Debug", "APP_GROUP_IDENTIFIER").to_s
+  production_group = target_settings.dig("Release", "APP_GROUP_IDENTIFIER").to_s
+  if !development_group.empty? || !production_group.empty?
+    failures << "#{target}: development app group is missing" if development_group.empty?
+    failures << "#{target}: production app group is missing" if production_group.empty?
+    if !development_group.empty? && development_group == production_group
+      failures << "#{target}: development and production app groups are not split"
+    end
+  end
 end
 
 report.fetch("urlSchemes").each do |entry|

@@ -23,7 +23,7 @@ fi
 dev_bundle="${bundle}.dev"
 mkdir -p "$output/Configuration/Entitlements" "$output/Configuration/Info"
 cat > "$output/Configuration/DebugConfig.xcconfig" <<EOF
-SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEVELOPMENT DEBUG
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEVELOPMENT DEBUG \$(inherited)
 PRODUCT_BUNDLE_IDENTIFIER = ${dev_bundle}
 DISPLAY_NAME = ${product} Dev
 PRODUCT_NAME = ${product}Dev
@@ -33,7 +33,7 @@ APP_GROUP_IDENTIFIER = group.${dev_bundle}
 URL_SCHEME = ${product}-dev
 EOF
 cat > "$output/Configuration/PreviewConfig.xcconfig" <<EOF
-SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEVELOPMENT PREVIEW
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEVELOPMENT PREVIEW \$(inherited)
 PRODUCT_BUNDLE_IDENTIFIER = ${dev_bundle}
 DISPLAY_NAME = ${product} Dev
 PRODUCT_NAME = ${product}Dev
@@ -43,7 +43,7 @@ APP_GROUP_IDENTIFIER = group.${dev_bundle}
 URL_SCHEME = ${product}-dev
 EOF
 cat > "$output/Configuration/ReleaseConfig.xcconfig" <<EOF
-SWIFT_ACTIVE_COMPILATION_CONDITIONS =
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = \$(inherited)
 PRODUCT_BUNDLE_IDENTIFIER = ${bundle}
 DISPLAY_NAME = ${product}
 PRODUCT_NAME = ${product}
