@@ -13,6 +13,10 @@ command output in the app's runbook.
 - [ ] Preview is Release-optimized and defines `PREVIEW`/`DEVELOPMENT`.
 - [ ] Debug/Preview and Release have distinct display names, product names and
       app icons.
+- [ ] `AppIcon-Dev` uses the shared blue-grid blueprint treatment, preserves
+      the production icon's recognizable skeleton, and contains no `DEV` badge;
+- [ ] the development icon is a distinct opaque 1024×1024 PNG referenced by a
+      universal iOS app-icon slot;
 - [ ] `CODE_SIGN_ENTITLEMENTS` and `INFOPLIST_FILE` resolve per configuration.
 - [ ] `SWIFT_ACTIVE_COMPILATION_CONDITIONS` preserves `$(inherited)` where the
       project requires inherited conditions.
@@ -70,6 +74,8 @@ watch target, App Intent extension, or other embedded target:
 ## Verification
 
 - [ ] `verify-identities.sh` passes;
+- [ ] the development icon is inspected at full size and approximately 60
+      points and remains recognizable at both sizes;
 - [ ] Debug simulator build passes;
 - [ ] Preview archive/ad hoc export passes;
 - [ ] Release archive/validation passes;

@@ -14,9 +14,12 @@ URL scheme, App Store metadata, or release configuration.
 6. Move identity-sensitive values into xcconfig/plist variables or the one
    runtime configuration type.
 7. Split storage, widgets, extensions, deep links, analytics and service policy.
-8. Update Codemagic and build products before changing any user data migration.
-9. Run the verifier. Fix every named finding; do not waive a finding silently.
-10. Install both apps and exercise a representative data write, widget refresh,
+8. Preserve the production icon and generate a distinct blue-grid wireframe
+   development icon from it; never replace the development identity with a
+   generic `DEV` badge.
+9. Update Codemagic and build products before changing any user data migration.
+10. Run the verifier. Fix every named finding; do not waive a finding silently.
+11. Install both apps and exercise a representative data write, widget refresh,
     deep link, notification, purchase gate, and backend call.
 
 If a legacy app has no safe development identity, stop after the read-only audit

@@ -7,7 +7,9 @@ Start with isolation before product features:
 3. Add the generated configs, entitlements, and identity type to the project.
 4. Add matching app/extension/widget App IDs and groups in Apple Developer.
 5. Add Debug/Preview/Release schemes or map one shared scheme to the configs.
-6. Add distinct app icons, names, URL schemes and backend environment markers.
+6. Generate the development app icon from the production icon using the shared
+   blue-grid wireframe treatment in `development-app-icon.md`; then add distinct
+   names, URL schemes and backend environment markers.
 7. Record third-party service decisions in the identity manifest.
 8. Configure Codemagic Preview and Release workflows.
 9. Run discovery, verification, builds, product inspection and side-by-side

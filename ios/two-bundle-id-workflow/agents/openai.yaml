@@ -1,6 +1,6 @@
 interface:
   display_name: "Two-Bundle iOS Isolation"
-  short_description: "Isolate dev/prod apps and wire signed previews"
-  default_prompt: "Use $two-bundle-id-workflow to audit and deterministically set up isolated Debug, Preview, and Release identities for this iOS app. If Slack delivery is requested, also verify the Indie Ops and Codemagic handoff and prove it with one live preview build."
+  short_description: "Isolate dev/prod apps, icons, and previews"
+  default_prompt: "Use $two-bundle-id-workflow to audit and deterministically set up isolated Debug, Preview, and Release identities, including a blueprint-style development app icon. If Slack delivery is requested, also verify the Indie Ops and Codemagic handoff and prove it with one live preview build."
 policy:
   allow_implicit_invocation: true

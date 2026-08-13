@@ -3,7 +3,8 @@ name: two-bundle-id-workflow
 description: >-
   Deterministically audit, bootstrap, migrate, and verify isolated iOS
   development and production identities across app targets, widgets,
-  extensions, app groups, plists, URL schemes, services, and Codemagic.
+  extensions, app groups, plists, URL schemes, development app icons,
+  services, and Codemagic.
   Use when creating or reviewing a two-bundle-ID setup for a new or existing
   iOS app, preparing side-by-side development and App Store installs, or wiring
   the signed Preview build into an Indie Ops/Slack delivery loop.
@@ -54,18 +55,21 @@ group.*              ↔ production companion entitlements
    development identity and Preview configuration additively.
 6. Apply the file-by-file checklist in `references/implementation-checklist.md`.
 7. Make explicit service decisions using `references/service-isolation.md`.
-8. Run `scripts/verify-identities.sh /path/to/app`. It must pass before any
+8. Generate the development app icon using
+   `references/development-app-icon.md`. Derive its wireframe from the real
+   production icon; do not use a generic `DEV` badge.
+9. Run `scripts/verify-identities.sh /path/to/app`. It must pass before any
    signing or CI work proceeds.
-9. Configure Apple App IDs, app groups, companion IDs, capabilities, and
+10. Configure Apple App IDs, app groups, companion IDs, capabilities, and
    registered-device profiles. Never silently reuse production entitlements.
-10. Configure Codemagic: `device-preview` uses `Preview`; TestFlight uses
+11. Configure Codemagic: `device-preview` uses `Preview`; TestFlight uses
     `Release`.
-11. If Slack delivery is required, follow
+12. If Slack delivery is required, follow
     `references/slack-codemagic-handoff.md`, register the app in Indie Ops, and
     run `scripts/verify-slack-preview-handoff.sh`.
-12. Build and inspect all three configurations. Run
+13. Build and inspect all three configurations. Run
     `scripts/verify-built-products.sh` against the resulting app bundles.
-13. Install the development and production apps together and execute the
+14. Install the development and production apps together and execute the
     host-specific smoke tests. Record evidence in the app runbook.
 
 ## Deterministic tooling
@@ -87,6 +91,7 @@ Read the variant references only when needed:
 - [preview-configuration.md](references/preview-configuration.md)
 - [service-isolation.md](references/service-isolation.md)
 - [apple-signing-and-capabilities.md](references/apple-signing-and-capabilities.md)
+- [development-app-icon.md](references/development-app-icon.md)
 - [slack-codemagic-handoff.md](references/slack-codemagic-handoff.md)
 - [implementation-checklist.md](references/implementation-checklist.md)
 
@@ -101,7 +106,8 @@ production identity, or project corruption.
 ## Completion gate
 
 Do not call an app complete unless the verifier passes, all companion targets
-are paired, the production settings match the pre-migration snapshot, both
+are paired, the production settings match the pre-migration snapshot, the
+development icon passes the blueprint-style review and asset validation, both
 identities install side-by-side, the app runbook contains the evidence, and—if
 Slack delivery is in scope—the cross-repository handoff verifier and one real
 Slack-triggered artifact both pass.
