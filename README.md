@@ -14,7 +14,8 @@ agent-skills/
 │   ├── asc-morning-brief/
 │   ├── generate-app-store-screenshots/
 │   ├── premium-onboarding/
-│   └── release-ios-app-locally/
+│   ├── release-ios-app-locally/
+│   └── two-bundle-id-workflow/
 ├── android/             # reserved
 ├── web/                 # reserved
 ├── scripts/install.sh
@@ -30,6 +31,7 @@ agent-skills/
 | [`generate-app-store-screenshots`](ios/generate-app-store-screenshots/) | iOS | `/generate-app-store-screenshots` | Deterministic Simulator capture, widget staging, framing, review, validation, and App Store Connect upload |
 | [`premium-onboarding`](ios/premium-onboarding/) | iOS | `/premium-onboarding` | Product narrative, adaptive iPhone/iPad layout, state architecture, motion, permissions, paywalls, accessibility, analytics, and QA for polished onboarding |
 | [`release-ios-app-locally`](ios/release-ios-app-locally/) | iOS | `/release-ios-app-locally` | Reproducible local App Store archive, upload, validation, tagging, and cleanup workflow |
+| [`two-bundle-id-workflow`](ios/two-bundle-id-workflow/) | iOS | `/two-bundle-id-workflow` | Deterministic Debug/Preview/Release identity isolation, migration, signing, CI, and artifact verification |
 
 ## Install
 
