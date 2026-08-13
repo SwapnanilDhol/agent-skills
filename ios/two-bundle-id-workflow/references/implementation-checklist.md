@@ -52,6 +52,10 @@ watch target, App Intent extension, or other embedded target:
       staging endpoint;
 - [ ] APNs topics and environments match each App ID;
 - [ ] development App IDs and capabilities are registered in Apple Developer;
+- [ ] every entitlement requested by the development app has a matching enabled
+      capability on its development App ID before profiles are generated;
+- [ ] an App ID capability change is followed by deletion/regeneration of stale
+      ad hoc profiles and a fresh signed archive;
 - [ ] ad hoc profiles include the test devices for app and companions; and
 - [ ] Codemagic `device-preview` uses Preview while TestFlight uses Release.
 
@@ -63,6 +67,8 @@ watch target, App Intent extension, or other embedded target:
 - [ ] Release archive/validation passes;
 - [ ] `verify-built-products.sh` passes for all three artifacts;
 - [ ] codesigned entitlements are inspected for app and companions;
+- [ ] the OTA manifest reports the development bundle ID and the IPA endpoint
+      returns HTTP 200 before the install link is announced;
 - [ ] development and production install side-by-side;
 - [ ] development data, widgets, links and notifications do not reach the
       production containers; and

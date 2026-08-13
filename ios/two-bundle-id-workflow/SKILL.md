@@ -79,6 +79,7 @@ Read the variant references only when needed:
 - [new-app-bootstrap.md](references/new-app-bootstrap.md)
 - [preview-configuration.md](references/preview-configuration.md)
 - [service-isolation.md](references/service-isolation.md)
+- [apple-signing-and-capabilities.md](references/apple-signing-and-capabilities.md)
 - [implementation-checklist.md](references/implementation-checklist.md)
 
 ## Low-cost execution
