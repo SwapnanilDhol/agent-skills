@@ -9,7 +9,7 @@ distribution.
 
 | Path | Identity | Xcode Cloud workflow |
 | --- | --- | --- |
-| PR verification | production build-only | PR-triggered build, no archive/distribution |
+| PR verification | production build-only | Manual-only build, no archive/distribution |
 | private TestFlight | production Release | `release/<VERSION>.<BUILD>` archive, internal testing only |
 | registered-device preview | development Preview | dedicated development product/workflow |
 
@@ -38,10 +38,13 @@ the private OTA landing page.
 ## PassMaker live policy
 
 PassMaker uses Xcode Cloud `PR Verification` for PR commits and `Default` for
-`release/<VERSION>.<BUILD>` production TestFlight archives. Registered-device
-Preview is disabled because no `com.swapnanildhol.PassMaker.dev` App Store
-Connect app/product has been approved. Debug/Preview uses its deterministic
-entitlement override; purchase testing uses production TestFlight.
+`release/<VERSION>.<BUILD>` production TestFlight archives. `PR Verification`
+has only a manual start condition: after a PR is attached, reply `Please build
+and test this PR`; after a green result, `Make a new build` creates the
+releasable build. Registered-device Preview is disabled because no
+`com.swapnanildhol.PassMaker.dev` App Store Connect app/product has been
+approved. Debug/Preview uses its deterministic entitlement override; purchase
+testing uses production TestFlight.
 
 ## Acceptance gate
 
