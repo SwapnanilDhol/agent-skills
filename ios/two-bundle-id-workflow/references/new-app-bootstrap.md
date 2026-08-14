@@ -11,9 +11,9 @@ Start with isolation before product features:
    blue-grid wireframe treatment in `development-app-icon.md`; then add distinct
    names, URL schemes and backend environment markers.
 7. Record third-party service decisions in the identity manifest.
-8. Select and record Preview and Release providers. Use Xcode Cloud only when
-   every app bundle identifier has the required App Store Connect app record;
-   otherwise use local macOS or Codemagic for registered-device Preview.
+8. Configure Xcode Cloud for production verification and Release. Enable hosted
+   Preview only after the development bundle has an explicitly approved App
+   Store Connect app record/product; otherwise record Preview as disabled.
 9. Run discovery, verification, builds, product inspection and side-by-side
    installation before merging the first feature.
 

@@ -13,20 +13,16 @@ CODE_SIGN_ENTITLEMENTS = $(DEV_ENTITLEMENTS)
 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon-Dev
 ```
 
-The selected ad hoc provider must archive Preview with registered-device
+The Xcode Cloud Preview workflow must archive Preview with registered-device
 profiles for the main app and every embedded target. It must check the source
 SHA, inspect the bundle ID/version/build, upload only to the private preview
 storage service, and report the result to the originating workflow. It must not
 run the TestFlight upload/tagging path.
 
-Provider choices:
-
-- **Local macOS or Codemagic:** requires only Developer Portal App IDs, devices,
-  capabilities, and ad hoc profiles.
-- **Xcode Cloud:** additionally requires an unpublished App Store Connect app
-  record/product for the development bundle ID. Archive artifacts must be
-  downloaded and handed to Indie Ops/R2 because Xcode Cloud does not provide
-  the app's private OTA landing page.
+Xcode Cloud requires an unpublished App Store Connect app record/product for
+the development bundle ID. Archive artifacts must be downloaded and handed to
+Indie Ops/R2 because Xcode Cloud does not provide the app's private OTA landing
+page. Keep the remote Preview command disabled until that entire path is proven.
 
 Never silently create a development App Store Connect record. Record that
 account-level choice in the app runbook first.

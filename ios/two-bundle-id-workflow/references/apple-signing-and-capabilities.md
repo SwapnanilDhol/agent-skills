@@ -1,6 +1,6 @@
 # Apple signing and capability recovery
 
-Use this when a Preview archive compiles without signing but the selected provider fails
+Use this when a Preview archive compiles without signing but Xcode Cloud fails
 after creating a development App ID or ad hoc profile.
 
 ## Required order
@@ -48,17 +48,10 @@ asc bundle-ids capabilities add \
   --pretty
 ```
 
-Then regenerate stale profiles. A Codemagic path is:
-
-```bash
-app-store-connect fetch-signing-files "$APP_BUNDLE_ID" \
-  --type IOS_APP_ADHOC \
-  --create \
-  --delete-stale-profiles
-```
-
-Repeat profile generation for every embedded target. Do not enable a capability
-on a companion App ID unless its own entitlements require it.
+After changing capabilities, start a clean Xcode Cloud build so managed signing
+regenerates the affected profiles. Repeat the capability audit for every
+embedded target. Do not enable a capability on a companion App ID unless its
+own entitlements require it.
 
 ## Isolation test
 
@@ -75,14 +68,14 @@ xcodebuild \
 ```
 
 - Unsigned archive fails: fix the project/code first.
-- Unsigned archive succeeds but signed CI archive fails: inspect App ID
+- Unsigned archive succeeds but signed Xcode Cloud archive fails: inspect App ID
   capabilities, profiles, certificates, and signed entitlements.
 
 ## End-to-end proof
 
-Do not stop at a green provider badge. Verify:
+Do not stop at a green Xcode Cloud status. Verify:
 
-- the provider used the exact reserved source SHA;
+- Xcode Cloud used the exact reserved source SHA;
 - the uploaded IPA bundle ID equals the development bundle ID;
 - the OTA manifest returns HTTP 200 and reports that same bundle ID;
 - the IPA endpoint returns HTTP 200 with a non-zero content length;
@@ -90,8 +83,7 @@ Do not stop at a green provider badge. Verify:
 - the result and install link remain in the originating Slack thread.
 
 Record the App ID resource IDs, capability output, build ID, version/build,
-source SHA, manifest bundle ID, and link expiry in the app runbook. If Xcode
-Cloud is selected for Preview, also record the development App Store Connect
-app/product ID and archive artifact ID. Never record
+source SHA, manifest bundle ID, link expiry, development App Store Connect
+app/product ID, workflow ID, and archive artifact ID in the app runbook. Never record
 private keys, bearer tokens, signed install tokens, or provisioning profile
 contents.

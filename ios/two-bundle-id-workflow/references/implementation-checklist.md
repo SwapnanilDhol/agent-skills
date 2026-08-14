@@ -65,12 +65,12 @@ watch target, App Intent extension, or other embedded target:
 - [ ] an App ID capability change is followed by deletion/regeneration of stale
       ad hoc profiles and a fresh signed archive;
 - [ ] ad hoc profiles include the test devices for app and companions; and
-- [ ] the selected ad hoc provider uses Preview while TestFlight uses Release;
-- [ ] if Xcode Cloud builds the development identity, a deliberately approved
-      unpublished App Store Connect app record/product exists for that bundle;
-- [ ] the app's device-preview workflow is API/manual-only and validates the
+- [ ] Xcode Cloud Preview uses Preview while TestFlight uses Release;
+- [ ] a deliberately approved unpublished App Store Connect app record/product
+      exists for the development bundle before hosted Preview is enabled;
+- [ ] the Xcode Cloud device-preview workflow is manual/API-only and validates the
       reserved source SHA before signing;
-- [ ] Indie Ops' app registry has the repository, selected provider mapping,
+- [ ] Indie Ops' app registry has the repository, Xcode Cloud team/workflow IDs,
       exact development bundle ID, and the correct preview enablement state;
 - [ ] the app has a Slack `releases` route and the cross-repository handoff
       verifier passes.

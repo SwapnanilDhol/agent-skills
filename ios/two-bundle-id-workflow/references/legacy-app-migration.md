@@ -17,9 +17,9 @@ URL scheme, App Store metadata, or release configuration.
 8. Preserve the production icon and generate a distinct blue-grid wireframe
    development icon from it; never replace the development identity with a
    generic `DEV` badge.
-9. Update the selected CI providers and build products before changing any user
-   data migration. Do not create an App Store Connect record for the development
-   bundle ID without an explicit account-owner decision.
+9. Migrate hosted CI to Xcode Cloud and verify the production product before
+   changing any user data migration. Do not create an App Store Connect record
+   for the development bundle ID without an explicit account-owner decision.
 10. Run the verifier. Fix every named finding; do not waive a finding silently.
 11. Install both apps and exercise a representative data write, widget refresh,
     deep link, notification, purchase gate, and backend call.

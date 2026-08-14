@@ -4,7 +4,7 @@ description: >-
   Deterministically audit, bootstrap, migrate, and verify isolated iOS
   development and production identities across app targets, widgets,
   extensions, app groups, plists, URL schemes, development app icons,
-  services, Apple signing, hosted CI, and Indie Ops delivery.
+  services, Apple signing, Xcode Cloud, and Indie Ops delivery.
   Use when creating or reviewing a two-bundle-ID setup for a new or existing
   iOS app, preparing side-by-side development and App Store installs, or wiring
   the signed Preview build into an Indie Ops/Slack delivery loop.
@@ -27,9 +27,9 @@ Use one app target with three configurations:
 
 | Configuration | Bundle identity | Distribution |
 |---|---|---|
-| `Debug` | development (`com.example.app.dev`) | local Xcode |
-| `Preview` | the same development ID | registered-device ad hoc via Codemagic, local macOS, or an Xcode Cloud dev product |
-| `Release` | production (`com.example.app`) | Xcode Cloud or Codemagic TestFlight/App Store |
+| `Debug` | development (`com.example.app.dev`) | development only |
+| `Preview` | the same development ID | Xcode Cloud development product, or disabled until provisioned |
+| `Release` | production (`com.example.app`) | Xcode Cloud TestFlight/App Store |
 
 `Preview` is Release-optimized but has the development identity and a
 `DEVELOPMENT`/`PREVIEW` compilation condition. TestFlight must always use
@@ -69,13 +69,13 @@ group.*              ↔ production companion entitlements
    signing or CI work proceeds.
 11. Configure Apple App IDs, app groups, companion IDs, capabilities, and
    registered-device profiles. Never silently reuse production entitlements.
-12. Select providers explicitly. TestFlight/App Store always uses `Release`.
+12. Configure Xcode Cloud. TestFlight/App Store always uses `Release`.
     Registered-device delivery uses `Preview` and must produce a development-ID
-    IPA. Xcode Cloud app products require an App Store Connect app record for
-    each bundle identifier; if a `.dev` record is intentionally absent, use a
-    local macOS or Codemagic ad hoc builder instead.
+    IPA. Xcode Cloud requires a separate App Store Connect app record/product
+    for the `.dev` bundle. If that record is not explicitly approved, keep the
+    hosted Preview path disabled.
 13. If Slack delivery is required, follow
-    `references/slack-ci-handoff.md`, register the app in Indie Ops, and
+    `references/xcode-cloud-handoff.md`, register the app in Indie Ops, and
     run `scripts/verify-slack-preview-handoff.sh`.
 14. Build and inspect all three configurations. Run
     `scripts/verify-built-products.sh` against the resulting app bundles.
@@ -103,14 +103,14 @@ Read the variant references only when needed:
 - [service-isolation.md](references/service-isolation.md)
 - [apple-signing-and-capabilities.md](references/apple-signing-and-capabilities.md)
 - [development-app-icon.md](references/development-app-icon.md)
-- [slack-ci-handoff.md](references/slack-ci-handoff.md)
+- [xcode-cloud-handoff.md](references/xcode-cloud-handoff.md)
 - [implementation-checklist.md](references/implementation-checklist.md)
 
 ## Low-cost execution
 
 Use a low-reasoning model for discovery, template application, deterministic
 checks, and repeated per-app migrations. Do not spend a reasoning model on
-waiting for Xcode Cloud, Codemagic, Apple processing, or artifact uploads. Escalate
+waiting for Xcode Cloud, Apple processing, or artifact uploads. Escalate
 only when a verifier reports an unsupported capability, an ambiguous existing
 production identity, or project corruption.
 

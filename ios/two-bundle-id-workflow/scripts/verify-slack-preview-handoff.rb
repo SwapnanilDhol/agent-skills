@@ -5,7 +5,6 @@ require "json"
 require "open3"
 require "optparse"
 require "pathname"
-require "yaml"
 
 options = { indie_ops: nil, app_slug: nil }
 OptionParser.new do |parser|
@@ -20,100 +19,43 @@ slug = options[:app_slug].to_s
 abort "--app-slug is required" unless slug.match?(/\A[a-z0-9-]+\z/)
 
 failures = []
-
-registry_path = indie_ops.join("config/apps.json")
-registry = registry_path.file? ? JSON.parse(registry_path.read) : { "apps" => [] }
-registry_app = Array(registry["apps"]).find { |entry| entry["slug"] == slug }
-preview_disabled = registry_app && registry_app["devicePreviewEnabled"] != true
-
-def tracked?(root, relative_path)
-  _stdout, _stderr, status = Open3.capture3(
-    "git", "-C", root.to_s, "ls-files", "--error-unmatch", relative_path
-  )
-  status.success?
-end
+uuid = /\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i
 
 def run(*command)
   stdout, stderr, status = Open3.capture3(*command)
   [stdout.strip, stderr.strip, status.success?]
 end
 
-codemagic_path = app_root.join("codemagic.yaml")
-script_path = app_root.join(".ci/device-preview.sh")
-unless preview_disabled
-  failures << "app: codemagic.yaml is missing" unless codemagic_path.file?
-  failures << "app: .ci/device-preview.sh is missing" unless script_path.file?
-end
-
-codemagic = codemagic_path.file? ? YAML.safe_load(codemagic_path.read, aliases: true) : {}
-workflow = codemagic.dig("workflows", "device-preview")
-unless preview_disabled || workflow.is_a?(Hash)
-  failures << "app: codemagic workflow device-preview is missing"
-end
-workflow = {} unless workflow.is_a?(Hash)
-
-variables = workflow.dig("environment", "vars") || {}
-groups = Array(workflow.dig("environment", "groups"))
-preview_bundle_id = variables["APP_BUNDLE_ID"].to_s
-preview_scheme = variables["XCODE_SCHEME"].to_s
-xcode_project = variables["XCODE_PROJECT"].to_s
-
-failures << "app: device-preview APP_BUNDLE_ID must end in .dev" if !preview_disabled && !preview_bundle_id.end_with?(".dev")
-failures << "app: device-preview XCODE_SCHEME is missing" if !preview_disabled && preview_scheme.empty?
-failures << "app: device-preview XCODE_PROJECT is missing" if !preview_disabled && xcode_project.empty?
-failures << "app: indie_ops_ci group is missing" if !preview_disabled && !groups.include?("indie_ops_ci")
-failures << "app: indie_ops_release group is missing" if !preview_disabled && !groups.include?("indie_ops_release")
-if !preview_disabled && Array(workflow.dig("triggering", "events")).any?
-  failures << "app: device-preview must be API/manual-only, not automatically triggered"
-end
-
-unless xcode_project.empty? || app_root.join(xcode_project).directory?
-  failures << "app: configured XCODE_PROJECT does not exist (#{xcode_project})"
-end
-
-unless preview_scheme.empty?
-  scheme_paths = app_root.glob("**/xcshareddata/xcschemes/#{preview_scheme}.xcscheme")
-  if scheme_paths.empty?
-    failures << "app: shared Preview scheme is missing (#{preview_scheme})"
-  elsif scheme_paths.none? { |path| path.read.match?(/<ArchiveAction\b[^>]*buildConfiguration\s*=\s*"Preview"/m) }
-    failures << "app: #{preview_scheme} Archive action does not use Preview"
-  end
-end
-
-if !preview_disabled && script_path.file?
-  _stdout, stderr, valid = run("bash", "-n", script_path.to_s)
-  failures << "app: device-preview.sh syntax failed (#{stderr})" unless valid
-  script = script_path.read
-  {
-    "reserved SHA check" => "DEVICE_PREVIEW_SOURCE_SHA",
-    "ad hoc profiles" => "IOS_APP_ADHOC",
-    "stale profile regeneration" => "--delete-stale-profiles",
-    "source callback header" => "X-Source-Commit",
-    "bundle callback header" => "X-Bundle-ID",
-    "Indie Ops artifact endpoint" => "/v1/device-previews/",
-  }.each do |label, marker|
-    failures << "app: device-preview.sh lacks #{label}" unless script.include?(marker)
-  end
-end
-
-failures << "app: codemagic.yaml is not tracked" if codemagic_path.file? && !tracked?(app_root, "codemagic.yaml")
-failures << "app: .ci/device-preview.sh is not tracked" if script_path.file? && !tracked?(app_root, ".ci/device-preview.sh")
-
+registry_path = indie_ops.join("config/apps.json")
+registry = registry_path.file? ? JSON.parse(registry_path.read) : { "apps" => [] }
 app = Array(registry["apps"]).find { |entry| entry["slug"] == slug }
 unless app
   failures << "indie-ops: app registry entry is missing for #{slug}"
   app = {}
 end
 
+preview_enabled = app["devicePreviewEnabled"] == true
+preview_bundle_id = app["devicePreviewBundleId"].to_s
+
 failures << "indie-ops: app is not enabled" unless app["enabled"] == true
 failures << "indie-ops: repository is missing" unless app["repository"].to_s.match?(/\A[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\z/)
-failures << "indie-ops: codemagicAppId is missing/invalid" if !preview_disabled && !app["codemagicAppId"].to_s.match?(/\A[a-f0-9]{24}\z/)
-failures << "indie-ops: disabled preview still has a devicePreviewBundleId" if preview_disabled && app.key?("devicePreviewBundleId")
-if !preview_disabled && app["devicePreviewBundleId"].to_s != preview_bundle_id
-  failures << "handoff: registry devicePreviewBundleId differs from Codemagic APP_BUNDLE_ID"
-end
-if !preview_disabled && app["bundleId"].to_s == preview_bundle_id
-  failures << "handoff: preview bundle ID equals the production bundle ID"
+failures << "indie-ops: xcodeCloudTeamId is missing/invalid" unless app["xcodeCloudTeamId"].to_s.match?(uuid)
+failures << "indie-ops: xcodeCloudWorkflowId is missing/invalid" unless app["xcodeCloudWorkflowId"].to_s.match?(uuid)
+failures << "indie-ops: xcodeCloudReleaseWorkflowId is missing/invalid" unless app["xcodeCloudReleaseWorkflowId"].to_s.match?(uuid)
+failures << "indie-ops: legacy codemagicAppId must be removed" if app.key?("codemagicAppId")
+
+if preview_enabled
+  failures << "indie-ops: devicePreviewBundleId must end in .dev" unless preview_bundle_id.end_with?(".dev")
+  failures << "indie-ops: Preview bundle ID equals production" if preview_bundle_id == app["bundleId"].to_s
+  failures << "indie-ops: xcodeCloudPreviewWorkflowId is missing/invalid" unless app["xcodeCloudPreviewWorkflowId"].to_s.match?(uuid)
+
+  preview_scheme = app_root.glob("**/xcshareddata/xcschemes/*.xcscheme").find do |path|
+    path.read.match?(/<ArchiveAction\b[^>]*buildConfiguration\s*=\s*"Preview"/m)
+  end
+  failures << "app: no shared scheme archives the Preview configuration" unless preview_scheme
+else
+  failures << "indie-ops: disabled Preview still has devicePreviewBundleId" if app.key?("devicePreviewBundleId")
+  failures << "indie-ops: disabled Preview still has xcodeCloudPreviewWorkflowId" if app.key?("xcodeCloudPreviewWorkflowId")
 end
 
 route_pattern = /\(\s*['"]#{Regexp.escape(slug)}['"]\s*,\s*['"]releases['"]\s*,\s*['"][CG][A-Z0-9]+['"]/
@@ -125,8 +67,10 @@ if wrangler_path.file?
   wrangler = JSON.parse(wrangler_path.read)
   production = wrangler.dig("env", "production") || {}
   failures << "indie-ops: production D1 binding is missing" if Array(production["d1_databases"]).empty?
-  preview_binding = Array(production["r2_buckets"]).find { |entry| entry["binding"] == "DEVICE_PREVIEWS" }
-  failures << "indie-ops: production DEVICE_PREVIEWS R2 binding is missing" unless preview_binding
+  if preview_enabled
+    preview_binding = Array(production["r2_buckets"]).find { |entry| entry["binding"] == "DEVICE_PREVIEWS" }
+    failures << "indie-ops: production DEVICE_PREVIEWS R2 binding is missing" unless preview_binding
+  end
 else
   failures << "indie-ops: wrangler.jsonc is missing"
 end
@@ -139,14 +83,11 @@ if branch == "main" && has_origin_main && head != origin_main
 end
 
 if failures.empty?
-  if preview_disabled
-    puts "PASS: Slack preview handoff is explicitly disabled for #{slug}; no provider fallback is configured."
-  else
-    puts "PASS: Slack preview handoff agrees for #{slug} (#{preview_bundle_id}, #{preview_scheme})."
-  end
+  status = preview_enabled ? "enabled" : "disabled until its development Xcode Cloud product is approved"
+  puts "PASS: Xcode Cloud handoff agrees for #{slug}; hosted Preview is #{status}."
   exit 0
 end
 
-puts "FAIL: #{failures.length} Slack preview handoff invariant(s) need attention."
+puts "FAIL: #{failures.length} Xcode Cloud handoff invariant(s) need attention."
 failures.each { |failure| puts "- #{failure}" }
 exit 1

@@ -15,11 +15,11 @@ CLIs. Record:
   icons, and service configuration;
 - desired app slug and Slack releases channel;
 - sibling Indie Ops repository path, when Slack delivery is in scope; and
-- availability of `xcodebuild`, `asc`, Xcode Cloud/Codemagic/local macOS access, GitHub access,
+- availability of `xcodebuild`, `asc`, Xcode Cloud, GitHub access,
   Cloudflare deployment access, and authenticated Slack.
 
-Do not ask for secret values. Check whether required secret names exist in the
-provider. If an interactive authentication or account decision is genuinely
+Do not ask for secret values. Check whether required secret names exist in
+Xcode Cloud and Indie Ops. If an interactive authentication or account decision is genuinely
 required, finish every non-blocked phase first, then request exactly one action.
 
 ## 1. Freeze production evidence
@@ -64,7 +64,7 @@ logic when they can resolve from build settings or the runtime identity type.
 Generate the blueprint development icon using `development-app-icon.md`.
 Record every service decision using `service-isolation.md`.
 
-## 3. Prove the project before provider mutation
+## 3. Prove the project before Xcode Cloud mutation
 
 Run the deterministic identity verifier, then build unsigned products:
 
@@ -90,20 +90,19 @@ capabilities before creating profiles. Create or regenerate `IOS_APP_ADHOC`
 profiles with all test devices. Follow `apple-signing-and-capabilities.md` and
 record resource IDs and capability names—not profile contents or keys.
 
-## 5. Configure CI and Slack delivery
+## 5. Configure Xcode Cloud and Slack delivery
 
-Choose the provider per distribution path and record the choice. Release uses
-the production identity. Preview uses the development identity.
+Release uses the production identity. Preview uses the development identity.
 
 When device preview delivery is requested:
 
-1. Select local macOS, Codemagic, or Xcode Cloud. Xcode Cloud requires a
-   separate unpublished App Store Connect app record/product for the `.dev`
-   bundle ID; do not create it implicitly.
+1. Confirm an account owner explicitly approved a separate unpublished App
+   Store Connect app record/product for the `.dev` bundle ID. If not, keep
+   hosted Preview disabled and continue with production Xcode Cloud migration.
 2. Commit a shared Preview scheme and deterministic archive/export script
-   satisfying `slack-ci-handoff.md`.
-3. Configure only the selected provider's secret names; never duplicate secret
-   values in source or documentation.
+   satisfying `xcode-cloud-handoff.md`.
+3. Configure Xcode Cloud workflow IDs and webhook secrets; never duplicate
+   secret values in source or documentation.
 4. Update Indie Ops `config/apps.json`, add the app's releases-channel D1
    migration, apply migrations, test, and deploy.
 5. Run `verify-slack-preview-handoff.sh` across both repositories.
@@ -120,7 +119,7 @@ post a new top-level message:
 Build latest main device preview
 ```
 
-Verify one provider run, the exact reserved source SHA, the development bundle
+Verify one Xcode Cloud run, the exact reserved source SHA, the development bundle
 ID in the IPA and OTA manifest, HTTP 200 for landing/manifest/IPA, side-by-side
 installation, and start/result replies in the originating thread. Never record
 signed install tokens.
@@ -135,9 +134,9 @@ Stop and report a named blocker rather than weakening isolation when:
 - a companion target cannot be paired;
 - RevenueCat/StoreKit policy is unspecified;
 - profiles omit the device or required capability;
-- the selected provider would build an unreserved SHA; or
+- Xcode Cloud would build an unreserved SHA; or
 - the artifact resolves to the production bundle ID.
 
 Completion means every checkbox in `implementation-checklist.md` is backed by
-a path, command result, provider resource ID, or live artifact fact in the
+a path, command result, Xcode Cloud resource ID, or live artifact fact in the
 app-local runbook.

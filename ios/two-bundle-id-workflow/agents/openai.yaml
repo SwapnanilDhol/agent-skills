@@ -1,6 +1,6 @@
 interface:
   display_name: "Two-Bundle iOS Isolation"
   short_description: "Isolate dev/prod apps, icons, and previews"
-  default_prompt: "Use $two-bundle-id-workflow to audit and deterministically set up isolated Debug, Preview, and Release identities, including a blueprint-style development app icon. Select Xcode Cloud, Codemagic, or local macOS explicitly for each distribution path; if Slack delivery is requested, verify the Indie Ops handoff with one live build."
+  default_prompt: "Use $two-bundle-id-workflow to audit and deterministically set up isolated Debug, Preview, and Release identities, including a blueprint-style development app icon. Configure Xcode Cloud for hosted verification and distribution; if the development App Store Connect product is not approved, keep remote Preview disabled. Verify the Indie Ops handoff with one live build when Slack delivery is requested."
 policy:
   allow_implicit_invocation: true
