@@ -65,11 +65,13 @@ watch target, App Intent extension, or other embedded target:
 - [ ] an App ID capability change is followed by deletion/regeneration of stale
       ad hoc profiles and a fresh signed archive;
 - [ ] ad hoc profiles include the test devices for app and companions; and
-- [ ] Codemagic `device-preview` uses Preview while TestFlight uses Release.
-- [ ] the app's `device-preview` workflow is API/manual-only and validates the
+- [ ] the selected ad hoc provider uses Preview while TestFlight uses Release;
+- [ ] if Xcode Cloud builds the development identity, a deliberately approved
+      unpublished App Store Connect app record/product exists for that bundle;
+- [ ] the app's device-preview workflow is API/manual-only and validates the
       reserved source SHA before signing;
-- [ ] Indie Ops' app registry has the repository, Codemagic app ID, exact
-      development bundle ID, and `devicePreviewEnabled: true`;
+- [ ] Indie Ops' app registry has the repository, selected provider mapping,
+      exact development bundle ID, and the correct preview enablement state;
 - [ ] the app has a Slack `releases` route and the cross-repository handoff
       verifier passes.
 

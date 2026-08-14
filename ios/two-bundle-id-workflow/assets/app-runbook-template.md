@@ -53,10 +53,12 @@ Add one row per companion target and configuration.
 
 Registered test devices: `TODO names/UDID suffixes only`
 
-## Codemagic and Slack
+## CI and Slack
 
-- Codemagic app ID: `TODO`
-- Workflow: `device-preview`
+- Release provider/workflow: `TODO`
+- Preview provider/workflow: `TODO`
+- Xcode Cloud app/product ID for development bundle, or `not created`: `TODO`
+- Codemagic app ID, if selected: `TODO`
 - Preview scheme: `TODO`
 - Slack releases channel ID: `TODO`
 - Indie Ops registry entry: `TODO path/commit`
@@ -78,7 +80,7 @@ Registered test devices: `TODO names/UDID suffixes only`
 
 - Slack root message timestamp/link: `TODO`
 - Reserved source SHA: `TODO`
-- Codemagic build ID: `TODO`
+- Provider build/artifact ID: `TODO`
 - Version/build: `TODO`
 - IPA bundle ID: `TODO`
 - Artifact bytes/SHA-256: `TODO`

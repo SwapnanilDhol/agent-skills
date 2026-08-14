@@ -15,7 +15,7 @@ CLIs. Record:
   icons, and service configuration;
 - desired app slug and Slack releases channel;
 - sibling Indie Ops repository path, when Slack delivery is in scope; and
-- availability of `xcodebuild`, `asc`, Codemagic access, GitHub access,
+- availability of `xcodebuild`, `asc`, Xcode Cloud/Codemagic/local macOS access, GitHub access,
   Cloudflare deployment access, and authenticated Slack.
 
 Do not ask for secret values. Check whether required secret names exist in the
@@ -90,15 +90,20 @@ capabilities before creating profiles. Create or regenerate `IOS_APP_ADHOC`
 profiles with all test devices. Follow `apple-signing-and-capabilities.md` and
 record resource IDs and capability names—not profile contents or keys.
 
-## 5. Configure Codemagic and Slack delivery
+## 5. Configure CI and Slack delivery
+
+Choose the provider per distribution path and record the choice. Release uses
+the production identity. Preview uses the development identity.
 
 When device preview delivery is requested:
 
-1. Add the repository to Codemagic and record its 24-character app ID.
-2. Commit a shared Preview scheme, API/manual-only `device-preview` workflow,
-   and `.ci/device-preview.sh` satisfying `slack-codemagic-handoff.md`.
-3. Reuse the existing Codemagic groups `indie_ops_ci` and
-   `indie_ops_release`; never duplicate their secret values.
+1. Select local macOS, Codemagic, or Xcode Cloud. Xcode Cloud requires a
+   separate unpublished App Store Connect app record/product for the `.dev`
+   bundle ID; do not create it implicitly.
+2. Commit a shared Preview scheme and deterministic archive/export script
+   satisfying `slack-ci-handoff.md`.
+3. Configure only the selected provider's secret names; never duplicate secret
+   values in source or documentation.
 4. Update Indie Ops `config/apps.json`, add the app's releases-channel D1
    migration, apply migrations, test, and deploy.
 5. Run `verify-slack-preview-handoff.sh` across both repositories.
@@ -115,7 +120,7 @@ post a new top-level message:
 Build latest main device preview
 ```
 
-Verify one Codemagic run, the exact reserved source SHA, the development bundle
+Verify one provider run, the exact reserved source SHA, the development bundle
 ID in the IPA and OTA manifest, HTTP 200 for landing/manifest/IPA, side-by-side
 installation, and start/result replies in the originating thread. Never record
 signed install tokens.
@@ -130,7 +135,7 @@ Stop and report a named blocker rather than weakening isolation when:
 - a companion target cannot be paired;
 - RevenueCat/StoreKit policy is unspecified;
 - profiles omit the device or required capability;
-- Codemagic would build an unreserved SHA; or
+- the selected provider would build an unreserved SHA; or
 - the artifact resolves to the production bundle ID.
 
 Completion means every checkbox in `implementation-checklist.md` is backed by
