@@ -64,7 +64,10 @@ code. The wrapper should own:
 - event schema versioning;
 - screen deduplication where lifecycle callbacks can repeat;
 - provider adapters and test seams;
-- normalization to short, stable event names and enum-like properties.
+- normalization to short, stable snake_case event names and enum-like properties.
+
+All event names must be `snake_case` (`paywall_viewed`). Reject camelCase, PascalCase,
+kebab-case, spaces, and names that embed IDs, routes, or content.
 
 Do not put static app/device/locale fields on every event when the provider already supplies them.
 Do not put session UUIDs on events when the provider already has sessions. Keep subscription state
@@ -75,7 +78,8 @@ dynamic; refresh user properties after entitlement changes.
 Instrument only confirmed boundaries:
 
 - onboarding start, meaningful step completion, and completion;
-- paywall actually shown; purchase/restore terminal success, cancellation, or categorized failure;
+- paywall actually shown; purchase/restore terminal success; user cancellation as its own
+  non-failure outcome; categorized purchase/restore failure only for genuine errors;
 - core output successfully created, saved, imported, exported, shared, or accepted;
 - permission decision after the system callback resolves;
 - AI/network operation accepted by the product or reaching a terminal categorized failure;
@@ -92,12 +96,18 @@ categories tied to a funnel. Use backend logs/traces for server diagnosis.
 
 Never use localized descriptions, exception messages, URLs, file paths, prompts, payloads, or stack
 traces as analytics dimensions. Map them to a finite taxonomy such as `timeout`, `rate_limited`,
-`unauthorized`, `invalid_response`, `provider_unavailable`, `user_cancelled`, and `unknown`.
+`unauthorized`, `invalid_response`, `provider_unavailable`, and `unknown`.
+
+Never emit `purchase_failed` or `restore_failed` for user cancellation. StoreKit
+`paymentCancelled`, RevenueCat `purchaseCancelledError`, and equivalent dismiss/cancel outcomes
+are not errors. If cancellation answers a funnel question, emit `purchase_cancelled` or
+`restore_cancelled`; otherwise omit it. Reserve `*_failed` for genuine payment, network, provider,
+or unknown store errors.
 
 ## Validate and document
 
-1. Search again for direct SDK calls, removed providers, stale keys, duplicate events, and raw error
-   text.
+1. Search again for direct SDK calls, removed providers, stale keys, duplicate events, raw error
+   text, non-snake_case event names, and purchase/restore failures fired on user cancellation.
 2. Run focused unit tests, typecheck/compile, and the platform build in proportion to risk.
 3. Exercise one success and terminal failure per changed funnel when runtime access is available.
 4. Verify identity and dynamic subscription properties in the provider debug view without sending

@@ -31,17 +31,30 @@ Reject a candidate when the question or action is blank.
 Copy a provider fact only when a documented join or funnel cannot use the provider integration, and
 record why.
 
+## Naming
+
+All event names must be `snake_case`. Reject camelCase (`paywallViewed`), PascalCase
+(`PaywallViewed`), kebab-case (`paywall-viewed`), spaces, and names that embed IDs, routes,
+content, or errors.
+
+Names should describe facts in past tense. Properties explain stable variants; they do not carry
+content.
+
 ## High-signal event shapes
 
 - `onboarding_started`, `onboarding_step_completed`, `onboarding_completed`
-- `paywall_viewed`, `purchase_completed`, `purchase_failed`, `restore_completed`, `restore_failed`
+- `paywall_viewed`, `purchase_completed`, `purchase_cancelled`, `purchase_failed`,
+  `restore_completed`, `restore_cancelled`, `restore_failed`
 - `feature_completed` with bounded `feature_name` and optional `source`
 - `share_completed` after the activity/result callback
 - `permission_decided` with permission type and boolean outcome
 - `<operation>_completed` and `<operation>_failed` with bounded operation and error categories
 
-Names should describe facts in past tense. Properties explain stable variants; they do not carry
-content.
+`purchase_failed` and `restore_failed` fire only for genuine store, payment, network, or provider
+errors. User cancellation is not a failure: do not map StoreKit `paymentCancelled`, RevenueCat
+`purchaseCancelledError`, or equivalent dismiss/cancel results onto `*_failed`. Use
+`purchase_cancelled` / `restore_cancelled` only when cancellation itself is a named funnel
+question; otherwise omit it.
 
 ## Volume anti-patterns
 
@@ -52,6 +65,7 @@ content.
 - both request-start and request-success when only completion affects a decision;
 - both client success and backend success for the same user outcome;
 - dynamic event names containing IDs, routes, content, or errors;
+- event names that are not `snake_case`;
 - raw timestamps, UUIDs, URLs, filenames, prompts, query text, colors, or descriptions as properties.
 
 ## Cardinality budget
