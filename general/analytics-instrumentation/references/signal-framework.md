@@ -49,6 +49,8 @@ content.
 - `share_completed` after the activity/result callback
 - `permission_decided` with permission type and boolean outcome
 - `<operation>_completed` and `<operation>_failed` with bounded operation and error categories
+- `app_store_clicked` on a marketing site at the outbound App Store / Play Store link, with
+  bounded `store` and `surface`
 
 `purchase_failed` and `restore_failed` fire only for genuine store, payment, network, or provider
 errors. User cancellation is not a failure: do not map StoreKit `paymentCancelled`, RevenueCat
@@ -100,6 +102,15 @@ identity.
 - Bound upstream response bodies and request durations before parsing or logging.
 - Cache only successful upstream decisions; do not cache outages as authorization failures.
 - Avoid logging successful requests when the client already records the accepted product outcome.
+
+## Website specifics
+
+- Instrument only high-intent marketing surfaces, not every page view or CTA.
+- Always fire `app_store_clicked` (or an equivalent snake_case name) at the outbound App Store /
+  Play Store link click, with bounded `store` and `surface`.
+- Prefer the site's existing analytics destination; do not add a second product analytics vendor
+  just for one click.
+- Do not send destination URLs, campaign copy, or user-entered form text as properties.
 
 ## Minimum useful documentation
 

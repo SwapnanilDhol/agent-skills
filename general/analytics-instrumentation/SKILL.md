@@ -83,7 +83,9 @@ Instrument only confirmed boundaries:
 - core output successfully created, saved, imported, exported, shared, or accepted;
 - permission decision after the system callback resolves;
 - AI/network operation accepted by the product or reaching a terminal categorized failure;
-- backend authentication/provider failures as structured operational logs.
+- backend authentication/provider failures as structured operational logs;
+- marketing-site high-intent surfaces when the product has a website, especially App Store
+  outbound clicks.
 
 Do not log intent taps when the outcome callback exists. Do not log successful backend traffic when
 the accepted client outcome is the product signal. Keep backend observability separate from product
@@ -104,10 +106,20 @@ are not errors. If cancellation answers a funnel question, emit `purchase_cancel
 `restore_cancelled`; otherwise omit it. Reserve `*_failed` for genuine payment, network, provider,
 or unknown store errors.
 
+## Website
+
+If the product also has a marketing website, instrument only the highest-intent surfaces on that
+site. Always instrument App Store (and Play Store, if present) outbound links at the actual click
+or navigation boundary so store-page arrivals from the site are countable. Prefer one snake_case
+event such as `app_store_clicked` with bounded properties like `store` and `surface`. Do not copy
+every page view, scroll, or CTA if automatic collection already covers traffic; keep the catalog
+tiny and focused on conversion into the store.
+
 ## Validate and document
 
 1. Search again for direct SDK calls, removed providers, stale keys, duplicate events, raw error
-   text, non-snake_case event names, and purchase/restore failures fired on user cancellation.
+   text, non-snake_case event names, purchase/restore failures fired on user cancellation, and
+   missing App Store click tracking on a product marketing site.
 2. Run focused unit tests, typecheck/compile, and the platform build in proportion to risk.
 3. Exercise one success and terminal failure per changed funnel when runtime access is available.
 4. Verify identity and dynamic subscription properties in the provider debug view without sending
