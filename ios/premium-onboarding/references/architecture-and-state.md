@@ -85,8 +85,16 @@ and extra SwiftUI exit animations do not guarantee single-surface dismissal.
 
 Use `safeAreaInset(edge: .bottom)` for the shared footer. Extend its background
 through the safe area while keeping controls above the home indicator. Let
-permission, paywall, or timed steps own a specialized footer only when their
-action state is independent.
+permission, inline-paywall, or timed steps own a specialized footer only when
+their action state is independent. The welcome screen may intentionally have no
+footer and place its direct Continue action at the bottom.
+
+Use the host design system’s public footer primitive when one exists. Otherwise
+compose a local footer from public button/material primitives; do not invent a
+package type based on an internal or nonexistent API. Keep ordinary footers on
+a low-opacity semantic system-background fill for stable contrast. An inline
+paywall is the intentional material exception: use `.ultraThinMaterial` so the
+inline plan cards remain visible through the footer.
 
 Do not wrap every step in a scroll view. Choose per step. Inputs, selection grids,
 and demos usually need scrolling; concise proof, solution, and completion screens

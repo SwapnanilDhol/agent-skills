@@ -36,6 +36,11 @@ Apply an asymmetric move-plus-opacity transition at both levels:
 Key content by stable step identity. A spring near response `0.5`, damping `0.76`,
 blend `0.08` is a starting point. Reduce Motion uses a short crossfade.
 
+When leaving a welcome burst, set an explicit exit phase as soon as Continue is
+tapped and hide the outgoing decorative items. A new screen’s opaque semantic
+background should be visible immediately; do not rely on delayed view removal
+to clean up the previous animation.
+
 ## CTA confirmation
 
 For a short personal payoff, a full-width CTA may morph into a centered
@@ -51,6 +56,12 @@ their moments. Avoid stacking ordinary button haptics over the score.
 
 Validate haptic timing and intensity on a physical device. Reduce transient count
 before weakening the main event when a pattern feels buzzy.
+
+For feature chips, prefer the public design-system chip primitive so its press
+feedback and light haptic are consistent with the rest of the app. A chip’s
+highlight is explanatory micro-interaction, not a purchase or onboarding
+selection. Keep that state separate from plan selection and avoid adding a
+second competing haptic score.
 
 ## Reduce Motion
 

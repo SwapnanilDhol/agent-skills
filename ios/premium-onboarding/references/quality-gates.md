@@ -75,6 +75,24 @@ UI-test:
 - returning-user marketing-only dismissal;
 - debug entry through the production coordinator.
 
+Paywall and visual-regression checks:
+
+- inline plans are all discoverable while the specialized material footer is
+  present;
+- direct purchase is disabled without a selected plan and reaches the normal
+  success handoff when purchase completes;
+- “Continue with Free” remains secondary and does not share the purchase CTA’s
+  visual treatment;
+- no obsolete plans/pricing prompt or generic trial footnote remains when the
+  inline selector already explains the offer;
+- feature chips animate or provide primitive feedback without changing plan
+  selection;
+- list-first screens have no empty hero gap and are not crowded against the
+  progress bar;
+- Wallet-style preview content is large, polished, and free of misleading
+  checkmarks or broken sample Wallet actions;
+- the welcome burst and icon do not remain visible after the first step change.
+
 ## Visual matrix
 
 | Dimension | Required cases |
@@ -100,7 +118,10 @@ and purchase-sheet behavior.
 | Hero is pinned high | Flexible space exists only below it | Center hero with flexible space on both sides |
 | Artwork flies off iPad edges | Stage uses full iPad width | Cap the decorative stage before normalized positioning |
 | CTA spans landscape iPad | Footer lacks content cap | Cap first, then center |
-| Cards show through buttons | Transparent footer has no scrim | Add an extended semantic-background gradient |
+| Cards show through ordinary buttons | Transparent footer has no scrim | Add an extended semantic-background gradient |
+| Inline paywall hides lower plans | Footer is opaque | Use the specialized `.ultraThinMaterial` paywall footer and verify contrast |
+| List content touches progress | Hidden hero or arbitrary spacer remains | Use an empty hero, deliberate top padding, and zero hero-to-headline spacing |
+| Welcome artwork ghosts into next screen | Outgoing burst remains mounted | Set an exit phase immediately and give the new host content an opaque background |
 | One step still stretches | It bypasses the shared container | Audit direct scroll/geometry containers |
 | Sidebar overlays onboarding | Wizard is installed in a split column | Present full-screen over the split controller |
 | Portrait split opens blank | Secondary controller is missing | Seed a placeholder and verify split behavior |
@@ -122,6 +143,8 @@ and purchase-sheet behavior.
 - Keyboard, Dynamic Type, localization, dark mode, and Reduce Motion pass.
 - Product demonstrations reuse shipping components and stable placeholders.
 - Permission previews and offers are truthful and timed after value.
+- Inline plans, direct purchase, secondary free continuation, material footer,
+  list-first composition, and Wallet-style result preview are verified.
 - Analytics reconstructs the funnel without collecting PII.
 - Production coordinator owns every presentation and exit.
 - Frame-by-frame dismissal leaves no orphaned cards, text, or animated layers.

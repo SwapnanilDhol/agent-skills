@@ -52,9 +52,35 @@ purchase started/completed/failed, restore, and skip with non-sensitive metadata
 Do not disguise a paywall as a mandatory setup step when the user can defer it.
 Make cancellation and continuation behavior explicit.
 
+When the purchase package provides an inline plan selector, embed that real
+component in the onboarding screen and make the primary CTA purchase the
+selected plan directly. Use “Continue with Free” as the secondary action;
+remove “See plans and pricing” and generic trial footnotes when the plans
+already show the pricing and eligibility. Keep a separate loading state and
+gate purchase on a selected plan.
+
+Remove a large hero graphic from this paywall variant. Use a compact group of
+colored feature chips above the inline plans for playful, optional highlights.
+The chips may toggle a visual highlight and use the design system’s built-in
+press/haptic behavior, but their state must never represent the selected plan.
+
+Use a specialized `safeAreaInset(edge: .bottom)` footer for the inline offer.
+Give it `.ultraThinMaterial` so the lower plans remain visible beneath it; an
+opaque footer can make the offer look like it contains only the top plan. Use
+the shared app footer for ordinary steps and a direct bottom CTA with no footer
+on the seamless welcome screen. See [inline-paywall-and-footers.md](inline-paywall-and-footers.md).
+
 ## Completion
 
 Treat completion as the handoff, not another explainer. Confirm the configured
 result, personalize concise copy when appropriate, place it immediately above the
 CTA, commit persistence once, and dismiss through the coordinator. Do not mark
 completion merely because the screen appeared.
+
+## Wallet-style value delivery
+
+For a first-pass or generated-result step, use a polished bundled preview or
+the production preview renderer. Fill the upper visual region with the pass,
+pin the copy toward the bottom, and avoid decorative green checkmarks. If the
+screen is showing a sample preview rather than performing a reliable PassKit
+handoff, omit “Show in Wallet” and use Continue as the primary CTA.

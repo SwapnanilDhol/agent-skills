@@ -130,6 +130,12 @@ LinearGradient(
 Keep two responsibilities separate: the scrim reaches the physical edge, while
 button content respects the bottom safe-area inset.
 
+For an inline paywall, do not hide the lower plan cards behind an opaque scrim.
+Use the specialized `.ultraThinMaterial` footer so the plans remain visually
+discoverable, then verify purchase button contrast and scrolling in landscape.
+This is a deliberate offer-comprehension exception to the default ordinary-step
+scrim.
+
 ## Full-bleed welcome stage
 
 Measure full-bleed height as geometry height plus top and bottom safe-area

@@ -46,6 +46,16 @@ Use chips for compact tags, filters, or dense optional attributes. A selection
 card should have a clear icon, concise title, optional one-line explanation,
 full-card hit target, selected trait, and non-color selected affordance.
 
+When the list itself is the onboarding question, make the screen list-first:
+omit decorative artwork, keep deliberate space below progress, and let the
+title plus full-width rows occupy the screen. Use the shared scroll shell with
+an empty hero and zero hero-to-headline spacing rather than reserving a hidden
+graphic region. Keep the shared Continue footer and selection validation.
+
+Use a public design-system selectable chip and flow layout for compact optional
+benefit tags or filters. Do not use chips when the choice needs explanatory
+copy, a large target, or a clear selection-card hierarchy.
+
 For multi-select, use stable option IDs rather than localized text. Keep the CTA
 disabled until the minimum valid count is reached. Avoid repetitive helper copy
 when the disabled CTA and card state already explain the interaction.

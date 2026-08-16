@@ -15,10 +15,14 @@ typography, cards, buttons, materials, settings rows, and haptic primitives.
 2. Inspect current launch routing, persistence flags, coordinator conventions,
    design-system components, notification service, purchase flow, analytics,
    and the real product views that onboarding can demonstrate.
-3. Run the existing flow on the smallest supported iPhone and a landscape iPad.
-4. Identify whether the task is a new flow, migration, visual refactor, launch
+3. Read the design-system capability catalog and feature-discovery guide before
+   writing reusable UI. Use public foundation primitives directly when they
+   fit; wrap them for product-specific behavior; do not invent an app-footer or
+   other component API that the package does not expose.
+4. Run the existing flow on the smallest supported iPhone and a landscape iPad.
+5. Identify whether the task is a new flow, migration, visual refactor, launch
    bug, iPad adaptation, permission/paywall change, or motion polish.
-5. Preserve user data and existing-user launch behavior during migration.
+6. Preserve user data and existing-user launch behavior during migration.
 
 ## Author the narrative first
 
@@ -65,8 +69,9 @@ Use an ordered step enum as the single source of truth for:
 
 The shared shell owns progress, step transitions, content geometry, and the
 bottom safe-area footer. Individual steps own only their visual, copy, and input.
-Permission, paywall, or timed steps may own a specialized footer; never render
-both footers.
+The welcome screen may intentionally use no footer and place its direct CTA at
+the bottom. Permission, inline-paywall, or timed steps may own a specialized
+footer; never render both footers.
 
 Use three regions on a standard screen:
 
@@ -77,6 +82,19 @@ Use three regions on a standard screen:
 Place the hero in the middle of the space above its copy with flexible space
 above and below. Do not pin it under progress with a large dead zone beneath.
 Every step uses the same eyebrow/title/subtitle hierarchy.
+
+There are two intentional exceptions to the standard hero composition:
+
+- List-first selection screens omit decorative artwork entirely. Give the list,
+  title, and supporting copy the full screen; keep deliberate top spacing below
+  progress and use full-width, pressable choice rows.
+- Paywalls that already show inline plans omit a hero graphic to preserve real
+  estate for benefits and pricing. Use compact, interactive feature chips for
+  lightweight product highlights, then place the real inline plan selector
+  below them.
+
+Read [references/inline-paywall-and-footers.md](references/inline-paywall-and-footers.md)
+for the implementation patterns and ownership matrix.
 
 ## Treat iPad as a required design mode
 
@@ -89,8 +107,9 @@ rules are non-negotiable:
 3. Cap decorative scatter stages independently; start near 560 points.
 4. Make every step render through the shared capped container. Audit exceptions.
 5. Center each hero vertically in the stage above the copy.
-6. Put a system-background scrim behind translucent footer controls so scrolling
-   content cannot show through on short landscape viewports.
+6. Protect footer contrast on short landscape viewports. An inline paywall is a
+   deliberate exception: its material footer should reveal the plan cards so
+   the offer does not appear to contain only one plan.
 7. Keep a valid secondary split-view controller behind the modal and use a tiled
    split behavior when overlay would obscure content.
 8. Verify orientation declarations and current App Store requirements. Do not
@@ -106,9 +125,14 @@ Show believable permission value before presenting the system prompt. Drive
 permission CTA behavior from a finite authorization-state enum and refresh it
 when the scene becomes active.
 
-Place a paywall only after the user understands the product. Keep entitlement,
-purchase, restore, and coordinator logic outside the SwiftUI view. Make defer
-or skip semantics explicit.
+Place a paywall only after the user understands the product. When the purchase
+package provides an inline plan selector, embed that production component in
+the onboarding content instead of building a second plan UI. The primary CTA
+should purchase the currently selected plan directly; use a clearly secondary
+free-continuation action. Do not retain “see plans and pricing” copy or a trial
+footnote when the plans and their trial eligibility are already visible.
+Keep entitlement, purchase, restore, and coordinator logic outside the SwiftUI
+view. Make defer or skip semantics explicit.
 
 Read [references/product-surfaces.md](references/product-surfaces.md) when the
 flow contains a demo, processing step, notification request, paywall, account
@@ -122,8 +146,11 @@ hierarchies or generating random coordinates. Blend ambient drift only after the
 main spring settles.
 
 Apply transitions at both the root marketing/setup boundary and the setup-step
-boundary. Make every delayed sequence cancellable. Provide an intentional Reduce
-Motion composition and test rich haptics on a physical device.
+boundary. Make every delayed sequence cancellable. When a welcome burst is
+leaving, clear or hide its outgoing decorative hierarchy immediately so it
+cannot remain visible through the next screen. Give the hosting surface an
+opaque semantic background. Provide an intentional Reduce Motion composition
+and test rich haptics on a physical device.
 
 Read [references/motion-and-haptics.md](references/motion-and-haptics.md) before
 implementing a hero burst, CTA morph, ambient animation, or haptic score.
@@ -166,6 +193,9 @@ definition of done.
 7. Analytics, accessibility identifiers, previews, visual QA, and rollout.
 8. Remove the old flow only after all production entry points use the new
    coordinator and the full app builds successfully.
+9. Validate list screens, inline plan visibility through the paywall footer,
+   direct purchase completion, Wallet preview presentation, and welcome-to-next
+   screen artifacting as first-class onboarding states.
 
 ## Completion gate
 
