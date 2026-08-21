@@ -71,7 +71,9 @@ The shared shell owns progress, step transitions, content geometry, and the
 bottom safe-area footer. Individual steps own only their visual, copy, and input.
 The welcome screen may intentionally use no footer and place its direct CTA at
 the bottom. Permission, inline-paywall, or timed steps may own a specialized
-footer; never render both footers.
+footer; never render both footers. Keep footer geometry in one shared container
+that owns the content cap, horizontal padding, safe-area extension, and surface.
+Specialized steps should replace the controls, not duplicate that geometry.
 
 Use three regions on a standard screen:
 
@@ -87,7 +89,9 @@ There are two intentional exceptions to the standard hero composition:
 
 - List-first selection screens omit decorative artwork entirely. Give the list,
   title, and supporting copy the full screen; keep deliberate top spacing below
-  progress and use full-width, pressable choice rows.
+  progress and use full-width, pressable choice rows. Keep unselected rows on a
+  neutral semantic surface; reserve stronger tint, stroke, and checkmark color
+  for selection instead of filling every option with a saturated gradient.
 - Paywalls that already show inline plans omit a hero graphic to preserve real
   estate for benefits and pricing. Use compact, interactive feature chips for
   lightweight product highlights, then place the real inline plan selector

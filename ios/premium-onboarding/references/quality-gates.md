@@ -87,8 +87,11 @@ Paywall and visual-regression checks:
   inline selector already explains the offer;
 - feature chips animate or provide primitive feedback without changing plan
   selection;
-- list-first screens have no empty hero gap and are not crowded against the
-  progress bar;
+- list-first screens have no decorative hero gap, keep a small deliberate space
+  below progress, and use quiet neutral rows with an unmistakable selected
+  state;
+- footer-bearing screens reuse one container geometry and show no unexplained
+  separator line;
 - Wallet-style preview content is large, polished, and free of misleading
   checkmarks or broken sample Wallet actions;
 - the welcome burst and icon do not remain visible after the first step change.
@@ -120,7 +123,9 @@ and purchase-sheet behavior.
 | CTA spans landscape iPad | Footer lacks content cap | Cap first, then center |
 | Cards show through ordinary buttons | Transparent footer has no scrim | Add an extended semantic-background gradient |
 | Inline paywall hides lower plans | Footer is opaque | Use the specialized `.ultraThinMaterial` paywall footer and verify contrast |
-| List content touches progress | Hidden hero or arbitrary spacer remains | Use an empty hero, deliberate top padding, and zero hero-to-headline spacing |
+| List content touches progress | Empty hero has no deliberate breathing room | Use an empty hero with a small explicit spacing, then verify on the smallest phone |
+| Every choice row competes for attention | Saturated category color fills all unselected cards | Use neutral semantic rows and reserve stronger tint/stroke/checkmark treatment for selection |
+| A line appears above every footer | A hard-coded separator is part of duplicated footer chrome | Centralize footer geometry and remove the separator unless visual evidence requires it |
 | Welcome artwork ghosts into next screen | Outgoing burst remains mounted | Set an exit phase immediately and give the new host content an opaque background |
 | One step still stretches | It bypasses the shared container | Audit direct scroll/geometry containers |
 | Sidebar overlays onboarding | Wizard is installed in a split column | Present full-screen over the split controller |

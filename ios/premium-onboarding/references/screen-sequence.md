@@ -45,12 +45,20 @@ Use substantial cards for choices that represent meaningful product statements.
 Use chips for compact tags, filters, or dense optional attributes. A selection
 card should have a clear icon, concise title, optional one-line explanation,
 full-card hit target, selected trait, and non-color selected affordance.
+Unselected cards should normally use a neutral semantic background with primary
+and secondary text. Keep category color in a soft icon tile, then add a
+low-opacity tint, border, and checkmark when selected. Avoid saturated
+full-card gradients across an entire choice list; they compete with scanning and
+make the selected state harder to distinguish.
 
 When the list itself is the onboarding question, make the screen list-first:
 omit decorative artwork, keep deliberate space below progress, and let the
 title plus full-width rows occupy the screen. Use the shared scroll shell with
-an empty hero and zero hero-to-headline spacing rather than reserving a hidden
-graphic region. Keep the shared Continue footer and selection validation.
+an empty hero and a small explicit hero-to-headline spacing—often around 20–24
+points—rather than reserving a hidden graphic region. Tune it from device
+evidence: zero can crowd the progress indicator, while a placeholder-sized gap
+recreates the removed hero. Keep the shared Continue footer and selection
+validation.
 
 Use a public design-system selectable chip and flow layout for compact optional
 benefit tags or filters. Do not use chips when the choice needs explanatory

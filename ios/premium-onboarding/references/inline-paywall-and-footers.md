@@ -12,11 +12,16 @@ pass type, or another meaningful option:
 - Omit decorative hero artwork. The list is the visual stage.
 - Keep the title and supporting copy above the list, with intentional spacing
   below the progress indicator. Do not let the first row touch the progress bar.
-- Prefer the shared scroll shell with an empty hero and zero hero-to-headline
-  spacing rather than adding a hidden placeholder with an arbitrary height.
+- Prefer the shared scroll shell with an empty hero and a small explicit
+  hero-to-headline spacing, commonly 20–24 points, rather than adding a hidden
+  placeholder with an arbitrary height. Tune from the smallest supported phone.
 - Use full-width selection rows/cards with a clear icon tile, concise title,
   optional two-line subtitle, selected tint, checkmark or selected symbol, and
   a 44-point-or-larger hit target.
+- Use a neutral semantic fill and primary/secondary text for unselected rows.
+  Keep option color restrained to the icon well; introduce a low-opacity tint,
+  border, and colored checkmark for selection. Do not render every choice as a
+  saturated gradient card.
 - Add a press treatment that respects Reduce Motion. Selection must be
   communicated by more than color.
 - Keep the shared footer behind the primary Continue action. Disable it until
@@ -30,7 +35,7 @@ OnboardingScrollableStep(
     eyebrow: "CHOOSE YOUR STARTING POINT",
     title: "What are you making today?",
     subtitle: "Pick one so we can tailor the examples.",
-    heroToHeadlineSpacing: 0
+    heroToHeadlineSpacing: 24
 ) {
     EmptyView()
 } content: {
@@ -95,18 +100,27 @@ Use `safeAreaInset(edge: .bottom)` so the action stays above the home indicator.
 The screen owns the footer only when its CTA semantics differ from the shared
 shell. Never stack a shared footer and a specialized footer.
 
+Route every footer-bearing screen through one shared container that owns the
+content-width cap, horizontal padding, top/bottom spacing, safe-area extension,
+and background surface. Standard, permission, and paywall footers may provide
+different controls, but should not reimplement this geometry. Screens that
+advance from a choice or timed task should not render an empty footer merely for
+consistency.
+
 | Screen | Footer | Background treatment |
 |---|---|---|
-| Welcome | No footer; direct bottom CTA | Seamless screen background |
-| Standard/list step | Shared app footer | Light semantic fill with a subtle separator |
-| Inline paywall | Specialized purchase footer | `.ultraThinMaterial` so plan cards remain visible |
-| Permission/timed step | Specialized only if action state differs | Match the product surface and protect contrast |
+| Welcome | Direct bottom CTA; no shell-managed footer | Shared container chrome when needed, otherwise seamless |
+| Standard/list step | Shared controls in the shared container | Low-opacity semantic fill or the app's standard material |
+| Inline paywall | Specialized purchase controls in the shared container | `.ultraThinMaterial` so plan cards remain visible |
+| Permission/timed step | Specialized controls only if action state differs | Reuse shared geometry and protect contrast |
 
 The inline-paywall material is intentional: an opaque system background can
 hide the lower plans and make the offer look like it has only one plan. Keep
 the material in the footer, not on top of the entire scroll content. Preserve
-button contrast, use a one-point separator if needed, and verify the plan cards
-remain legible while scrolling in light and dark appearance.
+button contrast and verify the plan cards remain legible while scrolling in
+light and dark appearance. Do not draw a top separator by default: the material
+or semantic-surface change usually establishes the boundary. Add a separator
+only when visual evidence shows that the boundary is otherwise unclear.
 
 For ordinary footers, use the host app’s existing footer/design-system surface
 when it is public. If no public footer exists, compose the local footer from
@@ -152,8 +166,10 @@ For a welcome screen with a blast/burst animation:
 Verify the following states on a small phone and landscape iPad:
 
 - list content is not touching the progress indicator;
-- list rows fill the available width and selection is visible without color;
+- list rows fill the available width, unselected rows stay visually quiet, and
+  selection is visible without relying on color;
 - welcome has no accidental footer background;
+- footer-bearing screens share geometry and have no unexplained top line;
 - inline plans remain visible behind the material footer;
 - primary purchase and secondary free actions have distinct hierarchy;
 - chip taps animate without changing the selected plan;

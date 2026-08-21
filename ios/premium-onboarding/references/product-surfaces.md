@@ -66,9 +66,11 @@ press/haptic behavior, but their state must never represent the selected plan.
 
 Use a specialized `safeAreaInset(edge: .bottom)` footer for the inline offer.
 Give it `.ultraThinMaterial` so the lower plans remain visible beneath it; an
-opaque footer can make the offer look like it contains only the top plan. Use
-the shared app footer for ordinary steps and a direct bottom CTA with no footer
-on the seamless welcome screen. See [inline-paywall-and-footers.md](inline-paywall-and-footers.md).
+opaque footer can make the offer look like it contains only the top plan. Keep
+its purchase/free controls specialized while reusing the app's shared footer
+container geometry. Use the shared app footer for ordinary steps and a direct
+bottom CTA on the welcome screen. See
+[inline-paywall-and-footers.md](inline-paywall-and-footers.md).
 
 ## Completion
 
