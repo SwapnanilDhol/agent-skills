@@ -29,7 +29,9 @@ without hard-coded app values in the skill.
 - Keep the export-options plist free of credentials.
 - Treat `locales` as the required metadata set for that app.
 - Allow repository instructions to override test commands and Simulator choice.
-- Discover version and build from the release request; do not store them here.
+- Discover version from the release request or live App Store train.
+- Discover the build from `asc builds next-build-number`; do not store it here
+  and do not reset to `1` when Apple already has a higher `CFBundleVersion`.
 - Derive branch, tag, metadata path, and release-note path from version/build.
 
 ## Export options

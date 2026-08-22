@@ -1,13 +1,17 @@
 ---
 name: release-ios-app-locally
-description: Prepare, archive, upload, validate, tag, and finish reproducible iOS App Store releases entirely from a local Mac. Use for new App Store marketing versions, replacement builds, build-specific release branches, per-version metadata and release notes, local Xcode archives, App Store Connect uploads, Derived Data cleanup, build attachment, validation, or release tagging without Xcode Cloud.
+description: Prepare, archive, upload, validate, tag, and finish reproducible iOS App Store releases. Prefer an existing Xcode Cloud release-branch archive when one would auto-start; otherwise archive locally. Use for new App Store marketing versions, replacement builds, build-specific release branches, per-version metadata and release notes, App Store Connect uploads, build attachment, validation, or release tagging.
 ---
 
 # Release iOS App Locally
 
-Run a local-first App Store release with one metadata set and release record per
-marketing version, but a unique branch and tag per uploaded build. Never depend
-on Xcode Cloud and never submit for App Review without explicit user approval.
+Run an App Store release with one metadata set and release record per marketing
+version, but a unique branch and tag per uploaded build. Never submit for App
+Review without explicit user approval.
+
+Before any archive, decide the upload owner: if an enabled Xcode Cloud workflow
+would archive on the derived `release/` branch, defer to Cloud and resume after
+that build is valid. Archive locally only when no such workflow would start.
 
 ## Resolve configuration
 
@@ -17,6 +21,10 @@ on Xcode Cloud and never submit for App Review without explicit user approval.
 3. Discover missing values from the Xcode project, existing metadata, git, and
    App Store Connect. Ask only for values that cannot be discovered safely.
 4. Require a three-component marketing version and a positive build number.
+   Discover the build from App Store Connect, not from a reset-to-1 guess.
+   Call `asc builds next-build-number` for the app and platform. Use that
+   exact next unused `CFBundleVersion`. A new marketing version does not
+   reset the Apple build number. Re-check immediately before upload.
 5. Derive, do not free-type:
    - branch: `release/<VERSION>.<BUILD>`
    - tag: `v<VERSION>.<BUILD>`
@@ -36,10 +44,43 @@ python3 <skill-dir>/scripts/derive_release_context.py \
 - Never release directly from `main` or another integration branch.
 - Never commit local Swift package paths or unpushed package revisions.
 - Never delete global Derived Data, global package caches, or unrelated archives.
-- Never use Xcode Cloud for archive or upload.
+- Do not local-archive when an enabled Cloud archive workflow would start on
+  the release branch. Do not run both.
 - Treat upload, App Store version creation, metadata push, and build attachment as
   release preparation. Treat App Review submission as a separate approval gate.
 - Stop before `--submit` or the equivalent unless the user explicitly requests it.
+
+## Choose the archive owner
+
+Do this after resolving version/build and before creating or pushing the
+release branch.
+
+1. List enabled Xcode Cloud workflows for the app:
+
+   ```bash
+   asc xcode-cloud workflows list --app "<APP_ID>" --pretty
+   ```
+
+2. A workflow is a release-branch auto-archive when all of these are true:
+   - `isEnabled` is true
+   - it has an `ARCHIVE` action
+   - `branchStartCondition` would match `release/<VERSION>.<BUILD>`
+     (prefix `release/` or an exact branch match)
+
+3. If one or more match:
+   - Prepare metadata, bump versions, pin packages, test, and commit as usual.
+   - Push the release branch once. That push is the Cloud start.
+   - Do not run a local `xcodebuild archive` or IPA upload.
+   - Wait for the matching Apple build to become `VALID`.
+   - If more than one archive workflow matches the same prefix, still do not
+     archive locally. Prefer the `APP_STORE_ELIGIBLE` build when attaching.
+     Record the extra Cloud builds; do not start a third upload.
+   - Continue from metadata, attach, validate, and the submit gate.
+
+4. If none match:
+   - Archive and upload locally as described below.
+   - Do not push `release/<VERSION>.<BUILD>` until Apple accepts that IPA,
+     unless repository docs prove no Cloud start condition can fire.
 
 ## 1. Create the build-specific release branch
 
@@ -86,10 +127,14 @@ python3 <skill-dir>/scripts/validate_metadata.py \
 4. Run the repository's required tests, Simulator build/launch, core workflow
    smoke test, and feature-specific release checks.
 5. Refresh App Store screenshots only when visible UI or marketing claims changed.
-6. Commit only intentional release files and push the release branch.
-7. Record the pushed commit as `<RELEASE_COMMIT>`.
+6. Commit only intentional release files.
+7. If Cloud owns the archive, push the release branch now and record
+   `<RELEASE_COMMIT>`. If local owns the archive, keep the branch unpushed
+   until Apple accepts the IPA, then push and record `<RELEASE_COMMIT>`.
 
 ## 4. Archive in an isolated local environment
+
+Skip this section when Cloud owns the archive.
 
 Create a unique temporary root with `mktemp -d`. Put Derived Data, cloned Swift
 packages, archive, export, and temporary files inside that root. Pass explicit
