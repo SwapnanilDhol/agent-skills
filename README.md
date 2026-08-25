@@ -12,6 +12,7 @@ agent-skills/
 │   └── analytics-instrumentation/
 ├── ios/                 # App Store Connect, Xcode, release workflows
 │   ├── asc-morning-brief/
+│   ├── app-attestation/
 │   ├── generate-app-store-screenshots/
 │   ├── premium-onboarding/
 │   ├── release-ios-app-locally/
@@ -28,6 +29,7 @@ agent-skills/
 |---|---|---|---|
 | [`analytics-instrumentation`](general/analytics-instrumentation/) | General | `/analytics-instrumentation` | Cost-conscious audit, design, implementation, and validation of decision-grade product analytics |
 | [`asc-morning-brief`](ios/asc-morning-brief/) | iOS | `/asc-morning-brief` | App Store Connect morning executive brief (acquisition, revenue, crashes, ratings, release health) |
+| [`app-attestation`](ios/app-attestation/) | iOS | `/app-attestation` | App Attest-backed sessions, RevenueCat purchase binding, Worker verification, and staged rollout |
 | [`generate-app-store-screenshots`](ios/generate-app-store-screenshots/) | iOS | `/generate-app-store-screenshots` | Deterministic Simulator capture, widget staging, framing, review, validation, and App Store Connect upload |
 | [`premium-onboarding`](ios/premium-onboarding/) | iOS | `/premium-onboarding` | Product narrative, adaptive iPhone/iPad layout, state architecture, motion, permissions, paywalls, accessibility, analytics, and QA for polished onboarding |
 | [`release-ios-app-locally`](ios/release-ios-app-locally/) | iOS | `/release-ios-app-locally` | App Store release: defer to an auto-starting Xcode Cloud archive when one exists, otherwise archive locally, then upload, validate, and tag |

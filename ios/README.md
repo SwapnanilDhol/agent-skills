@@ -4,6 +4,7 @@ App Store Connect, Xcode, TestFlight, and release workflows.
 
 | Skill | Invoke |
 |---|---|
+| [app-attestation](app-attestation/) | `/app-attestation` |
 | [asc-morning-brief](asc-morning-brief/) | `/asc-morning-brief` |
 | [generate-app-store-screenshots](generate-app-store-screenshots/) | `/generate-app-store-screenshots` |
 | [premium-onboarding](premium-onboarding/) | `/premium-onboarding` |
