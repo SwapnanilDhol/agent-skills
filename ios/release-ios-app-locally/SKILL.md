@@ -21,10 +21,12 @@ that build is valid. Archive locally only when no such workflow would start.
 3. Discover missing values from the Xcode project, existing metadata, git, and
    App Store Connect. Ask only for values that cannot be discovered safely.
 4. Require a three-component marketing version and a positive build number.
-   Discover the build from App Store Connect, not from a reset-to-1 guess.
-   Call `asc builds next-build-number` for the app and platform. Use that
-   exact next unused `CFBundleVersion`. A new marketing version does not
-   reset the Apple build number. Re-check immediately before upload.
+   Build numbers are scoped to the marketing version: a new marketing version
+   starts at build `1`; replacement builds for the same marketing version
+   increment from that version's latest existing build. Call
+   `asc builds next-build-number --app "<APP_ID>" --version "<VERSION>" --platform IOS`
+   and use the version-scoped result. If the version has no existing builds,
+   use build `1`. Re-check immediately before upload.
 5. Derive, do not free-type:
    - branch: `release/<VERSION>.<BUILD>`
    - tag: `v<VERSION>.<BUILD>`

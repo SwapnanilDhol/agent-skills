@@ -30,8 +30,10 @@ without hard-coded app values in the skill.
 - Treat `locales` as the required metadata set for that app.
 - Allow repository instructions to override test commands and Simulator choice.
 - Discover version from the release request or live App Store train.
-- Discover the build from `asc builds next-build-number`; do not store it here
-  and do not reset to `1` when Apple already has a higher `CFBundleVersion`.
+- Discover the build with the marketing-version filter in
+  `asc builds next-build-number`; do not store it here. A new marketing
+  version starts at build `1`; replacement builds for that same version
+  increment from its latest existing build.
 - Derive branch, tag, metadata path, and release-note path from version/build.
 
 ## Export options
