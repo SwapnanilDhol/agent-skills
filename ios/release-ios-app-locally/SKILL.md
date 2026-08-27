@@ -13,6 +13,29 @@ Before any archive, decide the upload owner: if an enabled Xcode Cloud workflow
 would archive on the derived `release/` branch, defer to Cloud and resume after
 that build is valid. Archive locally only when no such workflow would start.
 
+## Local-only mode
+
+Treat an explicit request such as “do it locally,” “do not trigger Xcode Cloud,”
+or “do not push to remote” as a hard workflow override. In local-only mode:
+
+- Never push the release branch, release commits, or release tag before, during,
+  or after the local archive and upload. A push after a valid local upload can
+  still match a branch- or tag-triggered Xcode Cloud workflow and create a
+  duplicate archive.
+- Ignore the default Cloud-owner preference and archive locally, even when an
+  enabled Cloud workflow would match the release branch.
+- Keep archive, export, upload, validation, metadata, and release-record work
+  local. Read-only fetches and App Store Connect API calls are allowed; do not
+  start an Xcode Cloud workflow.
+- Create the annotated tag locally only after the archive source is confirmed.
+  Do not push it until the user separately authorizes remote synchronization.
+- If the user asks to finish the repository locally, merge the release branch
+  into the local configured main branch without pushing. Otherwise leave the
+  release branch and tag local for the later synchronization step.
+- Report explicitly that no release-branch/tag push occurred and that Xcode
+  Cloud was not triggered. A later request to “push” must be treated as a new
+  remote-synchronization approval and checked against current Cloud triggers.
+
 ## Resolve configuration
 
 1. Read repository instructions and release docs first.
@@ -46,8 +69,11 @@ python3 <skill-dir>/scripts/derive_release_context.py \
 - Never release directly from `main` or another integration branch.
 - Never commit local Swift package paths or unpushed package revisions.
 - Never delete global Derived Data, global package caches, or unrelated archives.
+- In local-only mode, never push a release branch, release tag, or release
+  commit; this rule takes precedence over the normal Cloud-owner and finish
+  steps below.
 - Do not local-archive when an enabled Cloud archive workflow would start on
-  the release branch. Do not run both.
+  the release branch unless local-only mode is active. Do not run both.
 - Treat upload, App Store version creation, metadata push, and build attachment as
   release preparation. Treat App Review submission as a separate approval gate.
 - Stop before `--submit` or the equivalent unless the user explicitly requests it.
@@ -56,6 +82,9 @@ python3 <skill-dir>/scripts/derive_release_context.py \
 
 Do this after resolving version/build and before creating or pushing the
 release branch.
+
+If local-only mode is active, skip the Cloud-owner preference below and use a
+local archive. Do not push the release branch to test or start Cloud.
 
 1. List enabled Xcode Cloud workflows for the app:
 
@@ -132,7 +161,9 @@ python3 <skill-dir>/scripts/validate_metadata.py \
 6. Commit only intentional release files.
 7. If Cloud owns the archive, push the release branch now and record
    `<RELEASE_COMMIT>`. If local owns the archive, keep the branch unpushed
-   until Apple accepts the IPA, then push and record `<RELEASE_COMMIT>`.
+   until Apple accepts the IPA, then push and record `<RELEASE_COMMIT>`—unless
+   local-only mode is active. In local-only mode, keep the branch and all
+   release-record commits unpushed throughout the workflow.
 
 ## 4. Archive in an isolated local environment
 
@@ -212,6 +243,10 @@ After Apple shows the correct build and required validation passes:
 5. Check out the configured main branch, fast-forward it from the remote, merge
    the release branch, and push main.
 6. Delete the release branch locally and remotely when retention is unnecessary.
+
+In local-only mode, perform the record update, exact-source tag, and any
+requested local merge without pushing the release branch, tag, or main. Leave
+remote synchronization pending until the user explicitly authorizes it.
 
 ## 9. Clean local release artifacts
 
