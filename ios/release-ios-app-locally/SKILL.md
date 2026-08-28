@@ -49,12 +49,23 @@ or “do not push to remote” as a hard workflow override. In local-only mode:
    increment from that version's latest existing build. Call
    `asc builds next-build-number --app "<APP_ID>" --version "<VERSION>" --platform IOS`
    and use the version-scoped result. If the version has no existing builds,
-   use build `1`. Re-check immediately before upload.
+   use build `1`. Treat the observed App Store Connect result as authoritative:
+   Cloud or another upload may have advanced the number even when the local
+   repository is unchanged. Re-check immediately before creating the
+   build-specific branch and immediately before upload. If the result changes,
+   stop and derive a new branch/tag rather than uploading with stale names.
 5. Derive, do not free-type:
    - branch: `release/<VERSION>.<BUILD>`
    - tag: `v<VERSION>.<BUILD>`
    - metadata: `metadata/version/<VERSION>/`
    - release record: `docs/releases/<VERSION>.md`
+
+Use configured paths with their exact case; macOS can hide a `docs`/`Docs`
+mistake that breaks another checkout. Verify configured files exist before
+using them, and record any safe, discovered fallback path instead of silently
+inventing a new repository path. In App Store Connect’s API, the UI’s
+automatic release choice is `AFTER_APPROVAL`; verify the resulting enum after
+updating it.
 
 Run the naming helper when useful:
 
@@ -156,7 +167,11 @@ python3 <skill-dir>/scripts/validate_metadata.py \
 3. Resolve the committed remote package graph and commit `Package.resolved` if
    it changes. Preserve both branch and revision for branch-pinned packages.
 4. Run the repository's required tests, Simulator build/launch, core workflow
-   smoke test, and feature-specific release checks.
+   smoke test, and feature-specific release checks. Capture exit codes even
+   when using quiet output. If a parallel test run fails, isolate the failing
+   suite and rerun it using the repository's documented serialization rules;
+   record both outcomes. A serial pass diagnoses a concurrency-sensitive
+   failure but does not erase the failed parallel result.
 5. Refresh App Store screenshots only when visible UI or marketing claims changed.
 6. Commit only intentional release files.
 7. If Cloud owns the archive, push the release branch now and record
@@ -208,15 +223,28 @@ python3 <skill-dir>/scripts/inspect_archive.py \
   --build "<BUILD>"
 ```
 
-Export with an App Store Connect export-options plist into `<TEMP>/Export`.
-Require exactly one expected IPA and stop on any identity or signing mismatch.
+Inspect the configured export-options plist before exporting. Confirm its exact
+path, team, signing method, and `destination`:
+
+- With `destination=export`, export into `<TEMP>/Export`, require exactly one
+  expected IPA, and upload that IPA with the installed App Store Connect CLI.
+- With `destination=upload`, `xcodebuild -exportArchive` uploads directly and
+  normally leaves no IPA in `<TEMP>/Export`. Do not run a second CLI upload;
+  query `asc builds uploads list` for the exact marketing version and build to
+  capture the upload ID and follow processing.
+
+If the configured plist is missing, inspect only known local release artifact
+locations for a matching plist before stopping. Record the actual plist path
+used and its destination. Stop on any identity or signing mismatch.
 
 ## 6. Upload and verify with Apple
 
 1. Confirm local App Store Connect authentication.
 2. Inspect the installed CLI help rather than assuming stale upload syntax.
-3. Upload the exported IPA without a submit flag.
-4. Poll App Store Connect until the matching version and build appears.
+3. Upload the exported IPA without a submit flag when the export destination is
+   `export`; skip this step when `xcodebuild` already uploaded it.
+4. Poll the build-upload record until it is terminal, then resolve the matching
+   App Store build by both `CFBundleShortVersionString` and `CFBundleVersion`.
 5. Treat command exit success without a matching Apple build as incomplete.
 6. On rejection, record the diagnostics, clean temporary artifacts, and stop.
 
@@ -229,6 +257,17 @@ Require exactly one expected IPA and stop on any identity or signing mismatch.
 - Complete the encryption declaration.
 - Run App Store validation and record warnings separately from blockers.
 - Stop before App Review submission unless explicitly authorized.
+
+For a replacement build, first cancel any active App Review submission for the
+version and wait for cancellation to complete. Confirm the version is eligible
+for replacement, attach only the new valid build, and verify the old submission
+is no longer the latest active submission.
+
+Before submission, run the review dry run and verify that its version ID and
+build ID are the intended pair. If the convenience wrapper creates a submission
+but reports a target-version mismatch, do not retry it blindly: inspect the
+submission, then use the explicit sequence `submissions-create`, `items-add`,
+and `submissions-submit`, and verify the final submission state.
 
 ## 8. Finish the uploaded build
 
