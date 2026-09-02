@@ -73,6 +73,29 @@ Do not put static app/device/locale fields on every event when the provider alre
 Do not put session UUIDs on events when the provider already has sessions. Keep subscription state
 dynamic; refresh user properties after entitlement changes.
 
+## Coarse IP geolocation and RevenueCat attribution
+
+Mixpanel's iOS SDK can derive coarse location from the device's public IP. Its default automatic
+properties may include `$city`, `$region`, and `mp_country_code`; setting
+`trackAutomaticEvents: false` disables automatic event collection, not this geolocation behavior.
+Verify the current SDK configuration and provider dashboard before relying on these fields.
+
+RevenueCat supports the reserved `$ip` subscriber attribute, using the SDK's supported `"true"`
+sentinel, to associate request/device IP information for downstream integrations. This is distinct
+from `Purchases.shared.collectDeviceIdentifiers()`, which additionally collects device identifiers
+such as IDFA and IDFV. When the analytics privacy contract excludes advertising and device
+identifiers, set only `$ip` after RevenueCat configuration and before the first purchase; do not add
+GPS/location permission or an external IP lookup.
+RevenueCat treats device identifiers as installation-associated, so this is attribution context for
+downstream subscription events, not a live location stream; it does not backfill historical profiles.
+
+RevenueCat's Mixpanel integration forwards RevenueCat subscriber attributes to Mixpanel, but it
+does not copy Mixpanel-derived `$city`, `$region`, or `mp_country_code` back into RevenueCat.
+Treat IP-derived location as provider-owned, coarse, and approximate: VPNs, proxies, carrier
+routing, and Apple Private Relay can make it unavailable or inaccurate. Document the provider
+ownership, privacy rationale, and verification method, and do not duplicate these fields as custom
+event properties unless a documented join requires it.
+
 ## Instrument fire points
 
 Instrument only confirmed boundaries:

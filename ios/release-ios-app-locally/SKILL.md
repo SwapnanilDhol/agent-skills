@@ -301,3 +301,48 @@ Report version/build, branch, release commit, tag, Apple build ID and processing
 state, metadata action, validation result, submission state, merge result, and
 artifact-cleanup result. Clearly state whether App Review submission remains
 pending.
+
+## Operational learnings from Windfall
+
+For projects whose release workflow archives `release/` branches in Xcode Cloud:
+
+- Convert every sibling development package used by the app from
+  `XCLocalSwiftPackageReference` to its remote `XCRemoteSwiftPackageReference`
+  before pushing the release branch. Resolve and commit `Package.resolved` so
+  it contains the remote branch and revision pins. A stale `PBXFileReference`
+  such as `../SwapProKit` can shadow the remote package and prevent the lockfile
+  from recording the package; remove that stale file reference on the release
+  branch.
+- After the archive, upload, and submission are complete, restore the local
+  package references on the development branch with project-relative paths
+  such as `../SwapFoundationKit` and `../SwapProKit`. Verify the paths by
+  resolving the package graph; historical absolute-looking relative paths may
+  resolve incorrectly from the current project layout.
+- Xcode Cloud can sequence or reserve build numbers independently of the
+  version-scoped ASC query. If a corrected source run fails its bundle-version
+  guard, inspect the run and ASC upload records rather than bumping the
+  marketing version or retrying blindly. A clean rerun of the failed source
+  (`asc xcode-cloud run --source-run-id <RUN_ID> --clean`) can advance the Cloud
+  run sequence and produce the intended Apple build. Verify the resulting build
+  by both marketing version and build number.
+- Keep replacement metadata at `metadata/version/<VERSION>/` with no build
+  suffix. Keep version screenshots at the existing
+  `app_store/screenshots/upload/<VERSION>/<LOCALE>/` paths; reuse them when the
+  visible UI and marketing claims have not changed.
+- For a valid build missing export compliance, update the build explicitly with
+  `asc builds update --build-id <BUILD_ID> --uses-non-exempt-encryption=false`
+  only when the app's established encryption declaration supports that value.
+  Verify the build reaches `READY_FOR_BETA_TESTING` before distribution.
+- Find the requesting tester's internal groups with
+  `asc testflight testers list --app <APP_ID> --email <EMAIL> --include betaGroups`.
+  Add the valid build with `asc builds add-groups --build-id <BUILD_ID> --group
+  <GROUP_ID>` and verify the build's group relationships afterward.
+- Before App Review submission, run `asc review submit ... --dry-run` and
+  verify the exact version ID/build ID pair. Submit only after that check with
+  the explicit confirmation flag; verify the resulting submission is
+  `WAITING_FOR_REVIEW`.
+- Future localization policy: support one App Store locale per language. The
+  next release should use exactly six locales: `en-US` (English), `de-DE`
+  (German), `es-ES` (Spanish), `ja` (Japanese), `zh-Hans` (Simplified
+  Chinese), and `zh-Hant` (Traditional Chinese). Do not add regional English
+  or Spanish variants unless the release scope explicitly changes.

@@ -138,11 +138,35 @@ landscape canvases. Keep the review sheet outside the upload directory.
 
 ## Establish the campaign direction
 
-Start with the deterministic `centered` style unless the product already has an
-approved visual system. It uses a white canvas, a centered two-line SF Rounded
-headline, one short cobalt phrase, a larger centered subtitle with fixed
-leading, and a fully contained device. On landscape iPad it uses a smaller type
-scale and a wider device while preserving the same hierarchy.
+Start with a deterministic style that matches the product's approved visual
+system. If the product has no approved system, use the clean `poster` style:
+white canvas, faint rounded border, centered SF Rounded copy, and a fully
+contained device. Scale every position and font size proportionally from the
+1320x2868 reference canvas when rendering iPad; never tune tablet screenshots by
+eye or by platform-specific magic numbers.
+
+### Poster style lock
+
+The following values reproduce the MoneyTracker campaign look and are part of
+the template contract, not suggestions:
+
+- canvas: opaque white; border inset 6 px, radius 96 px, border width
+  `max(2, round(canvasWidth / 440))`, all scaled proportionally for other
+  accepted sizes;
+- eyebrow: SF Rounded Semibold, 76 px, centered at y=236 px, gray `#68686E`,
+  with a 6.5% horizontal margin and no terminal punctuation;
+- headline: SF Rounded Semibold, 150 px, centered from y=350 px, maximum three
+  lines, 138 px Latin leading and 170 px CJK leading, near-black `#08080C`;
+- use Semibold rather than Bold for the headline; do not add a subtitle,
+  underline, gradient, generated background, or decorative stock art in poster
+  mode;
+- keep the complete device visible and use one fixed device width/top anchor
+  per display type. Record any feature-specific exception in the manifest.
+
+The renderer must expose this as `--style poster`, validate exact dimensions,
+opaque RGB output, text contrast, line limits, and font availability. A
+localized poster keeps the same geometry and only swaps the locale-appropriate
+font and copy; CJK uses the wider 170 px leading.
 
 Prefer typographic restraint over decoration:
 
