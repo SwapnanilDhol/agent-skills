@@ -18,7 +18,10 @@ agent-skills/
 │   ├── release-ios-app-locally/
 │   └── two-bundle-id-workflow/
 ├── android/             # reserved
-├── web/                 # reserved
+├── web/                 # Browser product and interface workflows
+│   ├── contribution-grid-ui/
+│   ├── local-first-web-app/
+│   └── polished-web-interface/
 ├── scripts/install.sh
 └── README.md
 ```
@@ -28,6 +31,9 @@ agent-skills/
 | Skill | Category | Invoke | Description |
 |---|---|---|---|
 | [`analytics-instrumentation`](general/analytics-instrumentation/) | General | `/analytics-instrumentation` | Cost-conscious audit, design, implementation, and validation of decision-grade product analytics |
+| [`polished-web-interface`](web/polished-web-interface/) | Web | `/polished-web-interface` | Polished, accessible, responsive interfaces for web product working surfaces |
+| [`local-first-web-app`](web/local-first-web-app/) | Web | `/local-first-web-app` | IndexedDB persistence, migrations, offline behavior, local dates, backups, and browser-only reminders |
+| [`contribution-grid-ui`](web/contribution-grid-ui/) | Web | `/contribution-grid-ui` | Accessible GitHub-style contribution calendars and date-based heatmaps |
 | [`asc-morning-brief`](ios/asc-morning-brief/) | iOS | `/asc-morning-brief` | App Store Connect morning executive brief (acquisition, revenue, crashes, ratings, release health) |
 | [`app-attestation`](ios/app-attestation/) | iOS | `/app-attestation` | App Attest-backed sessions, RevenueCat purchase binding, Worker verification, and staged rollout |
 | [`generate-app-store-screenshots`](ios/generate-app-store-screenshots/) | iOS | `/generate-app-store-screenshots` | Deterministic Simulator capture, widget staging, framing, review, validation, and App Store Connect upload |
