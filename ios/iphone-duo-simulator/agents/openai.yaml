@@ -1,0 +1,4 @@
+interface:
+  display_name: "iPhone Duo Simulator"
+  short_description: "Drive iPhone Duo poses, taps, and captures from a session"
+  default_prompt: "Use $iphone-duo-simulator to fold, unfold, tap through, and capture my app on the iPhone Duo simulator."

@@ -14,6 +14,7 @@ agent-skills/
 │   ├── asc-morning-brief/
 │   ├── app-attestation/
 │   ├── generate-app-store-screenshots/
+│   ├── iphone-duo-simulator/
 │   ├── premium-onboarding/
 │   ├── release-ios-app-locally/
 │   └── two-bundle-id-workflow/
@@ -37,6 +38,7 @@ agent-skills/
 | [`asc-morning-brief`](ios/asc-morning-brief/) | iOS | `/asc-morning-brief` | App Store Connect morning executive brief (acquisition, revenue, crashes, ratings, release health) |
 | [`app-attestation`](ios/app-attestation/) | iOS | `/app-attestation` | App Attest-backed sessions, RevenueCat purchase binding, Worker verification, and staged rollout |
 | [`generate-app-store-screenshots`](ios/generate-app-store-screenshots/) | iOS | `/generate-app-store-screenshots` | Deterministic Simulator capture, widget staging, framing, review, validation, and App Store Connect upload |
+| [`iphone-duo-simulator`](ios/iphone-duo-simulator/) | iOS | `/iphone-duo-simulator` | Unattended iPhone Duo simulator control: Device Hub poses and rotation, cliclick taps with a device check, stable per-display captures, and recovery |
 | [`premium-onboarding`](ios/premium-onboarding/) | iOS | `/premium-onboarding` | Product narrative, adaptive iPhone/iPad layout, state architecture, motion, permissions, paywalls, accessibility, analytics, and QA for polished onboarding |
 | [`release-ios-app-locally`](ios/release-ios-app-locally/) | iOS | `/release-ios-app-locally` | App Store release: defer to an auto-starting Xcode Cloud archive when one exists, otherwise archive locally, then upload, validate, and tag |
 | [`two-bundle-id-workflow`](ios/two-bundle-id-workflow/) | iOS | `/two-bundle-id-workflow` | Deterministic Debug/Preview/Release identity and app-icon isolation, Apple signing, Xcode Cloud, Indie Ops delivery, and artifact verification |
