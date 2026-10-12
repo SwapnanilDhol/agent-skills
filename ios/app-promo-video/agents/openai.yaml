@@ -1,0 +1,4 @@
+interface:
+  display_name: "iOS App Promo Video"
+  short_description: "Remotion promo with mocked AI scenes, Simulator recordings, beat-synced captions"
+  default_prompt: "Use $app-promo-video to storyboard, record, cut, and render a vertical promo video for my iOS app."

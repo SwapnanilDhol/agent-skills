@@ -1,0 +1,27 @@
+{
+  "name": "app-promo",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "capture": "scripts/capture-flow.sh",
+    "prepare-assets": "node scripts/sync-assets.mjs && node scripts/build-timeline.mjs",
+    "predev": "npm run prepare-assets",
+    "dev": "remotion studio src/index.ts",
+    "prerender": "npm run prepare-assets",
+    "render": "remotion render src/index.ts Promo out/promo.mp4",
+    "still": "npm run prepare-assets && remotion still src/index.ts Promo out/poster.png --frame=150",
+    "typecheck": "tsc --noEmit",
+    "source-photo": "swift scripts/make-qr.swift SOURCE-QR-PAYLOAD public/source-qr.png && remotion still src/index.ts SourcePhoto public/source-photo.jpg --image-format=jpeg --jpeg-quality=88"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.534",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "remotion": "^4.0.534"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "typescript": "^7.0.2"
+  }
+}

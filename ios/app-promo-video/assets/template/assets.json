@@ -1,0 +1,9 @@
+{
+  "icon": "path/to/app-icon-1024.png",
+  "wallDir": "path/to/gallery/previews",
+  "wall": [
+    "item-01.png",
+    "item-02.png",
+    "item-03.png"
+  ]
+}

@@ -11,6 +11,7 @@ agent-skills/
 ├── general/             # Cross-platform product and engineering workflows
 │   └── analytics-instrumentation/
 ├── ios/                 # App Store Connect, Xcode, release workflows
+│   ├── app-promo-video/
 │   ├── asc-morning-brief/
 │   ├── app-attestation/
 │   ├── generate-app-store-screenshots/
@@ -35,6 +36,7 @@ agent-skills/
 | [`polished-web-interface`](web/polished-web-interface/) | Web | `/polished-web-interface` | Polished, accessible, responsive interfaces for web product working surfaces |
 | [`local-first-web-app`](web/local-first-web-app/) | Web | `/local-first-web-app` | IndexedDB persistence, migrations, offline behavior, local dates, backups, and browser-only reminders |
 | [`contribution-grid-ui`](web/contribution-grid-ui/) | Web | `/contribution-grid-ui` | Accessible GitHub-style contribution calendars and date-based heatmaps |
+| [`app-promo-video`](ios/app-promo-video/) | iOS | `/app-promo-video` | Remotion promo video: mocked AI/camera scenes ending on curated results, Simulator recordings in a drawn iPhone, beat-synced captions, synthesized music |
 | [`asc-morning-brief`](ios/asc-morning-brief/) | iOS | `/asc-morning-brief` | App Store Connect morning executive brief (acquisition, revenue, crashes, ratings, release health) |
 | [`app-attestation`](ios/app-attestation/) | iOS | `/app-attestation` | App Attest-backed sessions, RevenueCat purchase binding, Worker verification, and staged rollout |
 | [`generate-app-store-screenshots`](ios/generate-app-store-screenshots/) | iOS | `/generate-app-store-screenshots` | Deterministic Simulator capture, widget staging, framing, review, validation, and App Store Connect upload |
