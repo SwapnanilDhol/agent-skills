@@ -20,5 +20,7 @@ export const FONT = '"SF Pro Display", -apple-system, system-ui, sans-serif';
 export const FPS = 30;
 export const WIDTH = 1080;
 export const HEIGHT = 1920;
+// App Store app previews for 6.9" iPhones must be exactly 886 × 1920.
+export const APP_PREVIEW_WIDTH = 886;
 
 export const wallImages = assets.wall.map((name) => `assets/wall/${name}`);

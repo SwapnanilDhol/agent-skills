@@ -114,6 +114,10 @@ export const Flow = ({ segments: clips }: { segments: Segment[] }) => {
                 )}
               </Sequence>
             ))}
+            {/* simctl screenshots and recordings omit the Dynamic Island. */}
+            <PointsScreen width={SCREEN_WIDTH}>
+              <div style={{ position: "absolute", left: 138, top: 11, width: 126, height: 37, borderRadius: 20, background: "black" }} />
+            </PointsScreen>
           </div>
         </div>
       </AbsoluteFill>
