@@ -40,6 +40,11 @@ covers picking cut points and checking the render.
    `components/ios.tsx`. For a camera scene, design the photographed object
    in `src/stills/SourcePhoto.tsx` to match the reveal (same name, date,
    colours), then `npm run source-photo` (real QR via Core Image).
+   If the app has deterministic screenshot scenes, end mocks on real screens
+   instead: `npm run capture-screens -- <udid>` (`scripts/capture-screens.sh`)
+   and animate them with `components/ScreenBuild.tsx` (pass it through
+   `CameraMock`'s `renderReveal`); fake scrolls from two stills with
+   `ScrollMock` rather than recording them. See `references/styling.md`.
 6. **Record.** Write the app's scenes at the bottom of
    `scripts/capture-flow.sh` (library on top: relaunch, responsiveness probe,
    per-scene `rec_start`/`rec_stop`, pixel waits for remote sheets), boot a
@@ -51,7 +56,8 @@ covers picking cut points and checking the render.
    cold-launch black.
 8. **Review and render.** `npm run dev` for Studio; render stills of every
    segment and look at them; `npm run render`; `scripts/check-black.sh
-   out/promo.mp4`. Tell the user what you checked by stills vs what needs a
+   out/promo.mp4`; `npm run render-preview` for the App Store app preview
+   (886 × 1920). Tell the user what you checked by stills vs what needs a
    full-speed watch.
 
 ## Hard rules
@@ -64,6 +70,9 @@ covers picking cut points and checking the render.
 - **One edit per "make it yours" beat.** Several colour changes read as
   indecision; change one thing once and carry it to the ending.
 - **Playback rate 1 for recordings.** 1.25×/1.6× judders. Cut, don't speed up.
+- **Stay within 29 s.** App Store app previews must run 15–30 s; the
+  template's intro/wall/outro leave 45 beats for the phone scene, and
+  `build-timeline.mjs` warns when the total drifts outside the window.
 - **Don't trust wall-clock marks for cuts.** Simulator recording timing drifts
   under load; pick cuts from frames, and re-check after every re-capture.
 - **Check host load before recording** (`sysctl -n vm.loadavg`). Ask the user

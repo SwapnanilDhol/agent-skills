@@ -1,5 +1,6 @@
+import { ReactNode } from "react";
 import { AbsoluteFill, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
-import { StatusBar } from "../../components/ios";
+import { SCREEN_POINTS, StatusBar } from "../../components/ios";
 import { ResultReveal, ResultRevealProps } from "./ResultReveal";
 
 export type CameraMockProps = {
@@ -8,11 +9,19 @@ export type CameraMockProps = {
   /** Where the subject sits in the viewfinder, in points, and its tilt. */
   subject: { left: number; top: number; width: number; height: number; rotate: number };
   readingLabels?: [string, string];
-  reveal: Omit<ResultRevealProps, "startFrame">;
+  /** A curated result card, or renderReveal for a custom payoff. */
+  reveal?: Omit<ResultRevealProps, "startFrame">;
+  /** Custom payoff, given the frame it starts on (e.g. a real app screen). */
+  renderReveal?: (startFrame: number) => ReactNode;
+  /** Frames for the shutter press and the reveal (defaults fit 10 beats). */
+  shutterAt?: number;
+  revealAt?: number;
 };
 
-const SHUTTER = 48;
-const REVEAL = 96;
+// Bottom camera chrome (mode label + shutter), in points.
+const CHROME_HEIGHT = 190;
+// The "reading" label sits under the subject, but never inside the chrome.
+const LABEL_MAX_TOP = SCREEN_POINTS.height - CHROME_HEIGHT - 44;
 
 // Mocked camera capture: a handheld viewfinder, the outline locking onto the
 // subject, shutter + flash, a short "reading" beat with a scan line, then the
@@ -22,6 +31,9 @@ export const CameraMock = ({
   subject,
   readingLabels = ["Reading your photo…", "Building your result…"],
   reveal,
+  renderReveal,
+  shutterAt: SHUTTER = 48,
+  revealAt: REVEAL = 96,
 }: CameraMockProps) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -31,7 +43,7 @@ export const CameraMock = ({
   const wobbleX = Math.sin(t / 11) * 4;
   const wobbleY = Math.cos(t / 14) * 3;
 
-  const lock = spring({ frame: frame - 12, fps, config: { damping: 15 } });
+  const lock = spring({ frame: frame - 8, fps, config: { damping: 15 } });
   const inset = (1 - lock) * 40;
   const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
   const shutterPress = interpolate(frame, [SHUTTER - 3, SHUTTER, SHUTTER + 4], [1, 0.82, 1], clamp);
@@ -85,7 +97,7 @@ export const CameraMock = ({
           <div
             style={{
               position: "absolute",
-              top: subject.top + subject.height + 54,
+              top: Math.min(subject.top + subject.height + 54, LABEL_MAX_TOP),
               width: "100%",
               textAlign: "center",
               color: "white",
@@ -93,7 +105,7 @@ export const CameraMock = ({
               fontWeight: 600,
             }}
           >
-            {frame - SHUTTER < 26 ? readingLabels[0] : readingLabels[1]}
+            {frame - SHUTTER < (REVEAL - SHUTTER) / 2 ? readingLabels[0] : readingLabels[1]}
           </div>
         </div>
       )}
@@ -107,7 +119,7 @@ export const CameraMock = ({
           left: 0,
           right: 0,
           bottom: 0,
-          height: 190,
+          height: CHROME_HEIGHT,
           background: "rgba(0,0,0,0.78)",
           display: "flex",
           flexDirection: "column",
@@ -132,7 +144,7 @@ export const CameraMock = ({
       </div>
 
       <AbsoluteFill style={{ background: "white", opacity: flash }} />
-      <ResultReveal {...reveal} startFrame={REVEAL} />
+      {renderReveal ? renderReveal(REVEAL) : reveal && <ResultReveal {...reveal} startFrame={REVEAL} />}
     </AbsoluteFill>
   );
 };

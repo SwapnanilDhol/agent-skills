@@ -21,6 +21,10 @@ WALLET=com.apple.Passbook
 PROMO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 OUT_DIR="$PROMO_ROOT/public/recordings"
 mkdir -p "$OUT_DIR"
+# simctl runs in CoreSimulator, which can't write into privacy-protected
+# folders like ~/Desktop (and fails silently with stderr discarded); record
+# into a temp dir and transcode into OUT_DIR.
+RAW_DIR="$(mktemp -d)"
 
 now() { python3 -c 'import time; print(f"{time.time():.3f}")'; }
 tap() { axe tap -x "$1" -y "$2" --tap-style physical --udid "$UDID" >/dev/null; }
@@ -48,6 +52,8 @@ wait_add_to_wallet() { wait_pixel 1092 261 '(( b > 200 && r < 80 ))'; }
 relaunch() {
   xcrun simctl terminate "$UDID" "$BUNDLE" 2>/dev/null || true
   xcrun simctl terminate "$UDID" "$WALLET" 2>/dev/null || true
+  # A no-op on Xcode 27.1: press Home with the iOS Simulator tool (HOME button)
+  # before each recording that launches from another app.
   axe button home --udid "$UDID" >/dev/null
   sleep 1
   local env_args=()
@@ -66,9 +72,9 @@ mark() { MARKS+="\"$1\": $(python3 -c "print(round($(now) - $START, 3))"),"; }
 
 rec_start() {
   CLIP=$1 MARKS=""
-  xcrun simctl io "$UDID" recordVideo --codec=h264 --force "$OUT_DIR/$CLIP.mov" 2>"$OUT_DIR/$CLIP.log" &
+  xcrun simctl io "$UDID" recordVideo --codec=h264 --force "$RAW_DIR/$CLIP.mov" 2>"$RAW_DIR/$CLIP.log" &
   RECORDER=$!
-  until grep -q "Recording started" "$OUT_DIR/$CLIP.log" 2>/dev/null; do sleep 0.05; done
+  until grep -q "Recording started" "$RAW_DIR/$CLIP.log" 2>/dev/null; do sleep 0.05; done
   START=$(now)
 }
 
@@ -79,9 +85,9 @@ rec_stop() {
   RECORDER=""
   # Constant 30 fps so Remotion can seek frame-accurately. simctl stops writing
   # frames while the screen is still, so pad with the last frame.
-  ffmpeg -loglevel error -y -i "$OUT_DIR/$CLIP.mov" -vf "fps=30,scale=1080:-2,tpad=stop_mode=clone:stop_duration=3" \
+  ffmpeg -loglevel error -y -i "$RAW_DIR/$CLIP.mov" -vf "fps=30,scale=1080:-2,tpad=stop_mode=clone:stop_duration=3" \
     -c:v libx264 -crf 17 -pix_fmt yuv420p -movflags +faststart "$OUT_DIR/$CLIP.mp4"
-  rm -f "$OUT_DIR/$CLIP.mov" "$OUT_DIR/$CLIP.log"
+  rm -f "$RAW_DIR/$CLIP.mov" "$RAW_DIR/$CLIP.log"
   python3 - "$OUT_DIR/marks.json" "$CLIP" <<EOF
 import json, os, sys
 path, clip = sys.argv[1], sys.argv[2]
@@ -93,7 +99,7 @@ EOF
 }
 trap '[[ -n "$RECORDER" ]] && kill -INT "$RECORDER" 2>/dev/null || true' EXIT
 
-xcrun simctl status_bar "$UDID" override --time 9:41 --batteryState charged --batteryLevel 100 \
+xcrun simctl status_bar "$UDID" override --time 9:41 --batteryState discharging --batteryLevel 100 \
   --cellularBars 4 --wifiBars 3 >/dev/null
 
 # --- scenes (replace with the app's flows) -----------------------------------

@@ -5,9 +5,13 @@ change them in one place (`src/brand.ts`, scene files) rather than per scene.
 
 ## Canvas
 
-- 1080 × 1920, 30 fps. Background = the app's own surface: iOS grouped
-  background `#F2F2F7` with a faint 36 px dot grid (the app's Home screen
-  texture). A purple marketing gradient was rejected as "old screenshot"
+- 1080 × 1920, 30 fps, 29 s by default. App Store app previews must run
+  15–30 s, so one cut serves both; the `AppPreview` composition renders the
+  same timeline at 886 × 1920 (the exact 6.9" iPhone preview size) and
+  `npm run render-preview` re-encodes it to spec (H.264 High, 30 fps, AAC
+  stereo 44.1 kHz). The drawn iPhone fits both widths.
+- Background = the app's own surface: iOS grouped background `#F2F2F7`
+  with a faint 36 px dot grid (the app's Home screen texture). A purple marketing gradient was rejected as "old screenshot"
   styling.
 - Ink `#111014`; SF Pro Display via the system font stack (renders because
   Remotion's headless browser runs on macOS).
@@ -16,10 +20,10 @@ change them in one place (`src/brand.ts`, scene files) rather than per scene.
 
 | Scene | Length | Notes |
 |---|---|---|
-| Intro | 75 frames (5 beats) | Icon springs in with a slight rotation, then name (112 px, 800, −3 tracking), then tagline. The groove drops when it ends. |
-| Wall | 90 frames | Three tilted (−8°) columns of content cards drifting in alternating directions, scale-in on entry, under a frosted white caption card ("60+ templates"). |
-| Phone | sum of segments | One drawn iPhone stays on screen; mocks and recordings swap inside it; captions change above it. |
-| Outro | 105 frames | Icon, name, two-line description, black CTA pill. |
+| Intro | 60 frames (4 beats) | Icon springs in with a slight rotation, then name (112 px, 800, −3 tracking), then tagline. The groove drops when it ends. |
+| Wall | 60 frames | Three tilted (−8°) columns of content cards drifting in alternating directions, scale-in on entry, under a frosted white caption card ("60+ templates"). |
+| Phone | sum of segments (675 frames / 45 beats fills 29 s) | One drawn iPhone stays on screen; mocks and recordings swap inside it; captions change above it. |
+| Outro | 75 frames | Icon, name, two-line description, black CTA pill. |
 
 ## Drawn iPhone
 
@@ -29,8 +33,8 @@ change them in one place (`src/brand.ts`, scene files) rather than per scene.
 - Enters with a spring from below (damping 16), exits by fading, dropping and
   scaling to 0.92 over 12 frames.
 - Mocks are laid out in device points (`PointsScreen`) so they line up 1:1
-  with real recordings; include the status bar (9:41, full battery) and
-  Dynamic Island.
+  with real recordings; include the status bar (9:41, full battery). The
+  Dynamic Island is drawn once by `Flow.tsx` over every clip.
 
 ## Captions
 
@@ -56,6 +60,33 @@ change them in one place (`src/brand.ts`, scene files) rather than per scene.
 - The **source photo** for a camera scene: the object on a warm oak desk
   (layered gradients for grain), rotated −5°, real drop shadow, vignette;
   everything on it matches the reveal.
+- Every mock in the drawn iPhone gets the **Dynamic Island** from `Flow.tsx`
+  (an overlay above all clips): simctl screenshots and recordings omit it.
+
+## Mock on the app's own screens
+
+When a scene can't be recorded (AI, camera, sample data) but the app can
+render the result screen deterministically, mock the *path* and end on the
+*real* screen instead of a drawn card:
+
+- Capture the screen as a 3× still with `scripts/capture-screens.sh` (the
+  app's debug screenshot-scene launch mode, fixed data, pinned status bar).
+- Animate it with `components/ScreenBuild.tsx`: the static base fades in,
+  then horizontal bands (a card, a list, a message bubble; `top`/`bottom` in
+  points) spring up into place at their own frames. Bands are masked out of
+  the base so nothing shows twice; `from: "fade"` for bands that shouldn't
+  move. Two to four bands, 6–10 frames apart, reads as "building".
+- Chain it after a mocked input: `CameraMock`'s `renderReveal={(start) =>
+  <Sequence from={start}><ScreenBuild … /></Sequence>}` ends the camera on
+  the real result instead of a `ResultReveal` card.
+- **Scrolls: stitch stills instead of recording.** simctl drops frames during
+  a fast scroll and it visibly stutters. Capture the screen at rest and
+  scrolled, measure the offset off one row (its y in both captures), and use
+  `scenes/mock/ScrollMock.tsx`: the page moves as one stitched strip while
+  only the header and floating chrome (tab bar pills, as clip-path insets)
+  stay pinned and cross-fade to their scrolled look.
+- Real copy and layout beat drawn approximations; only draw what the app
+  can't render in a screenshot scene.
 
 ## Music
 

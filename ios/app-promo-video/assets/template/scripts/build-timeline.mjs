@@ -56,13 +56,24 @@ const segments = segmentSpecs
       : { durationInFrames: beats * BEAT_FRAMES }),
   }));
 
+// App Store app previews must run 15–30 s, so the default promo is 29 s and
+// one render serves both the social cut and the preview. Intro, wall and
+// outro take 195 frames, leaving 675 (45 beats) for the phone scene; budget
+// segmentSpecs against that.
+const MAX_SECONDS = 29;
 const scenes = {
-  intro: 75, // 5 beats; the groove drops when the intro ends
-  wall: 90,
+  intro: 60, // 4 beats; the groove drops when the intro ends
+  wall: 60,
   flow: segments.reduce((sum, segment) => sum + segment.durationInFrames, 0),
-  outro: 105,
+  outro: 75,
 };
 const totalFrames = Object.values(scenes).reduce((a, b) => a + b, 0);
+if (totalFrames > MAX_SECONDS * FPS || totalFrames < 15 * FPS) {
+  console.warn(
+    `Timeline is ${(totalFrames / FPS).toFixed(1)}s; App Store previews need 15–30 s (aim for ${MAX_SECONDS}). ` +
+      `The phone scene has ${MAX_SECONDS * FPS - scenes.intro - scenes.wall - scenes.outro} frames.`,
+  );
+}
 
 writeFileSync(
   join(promoRoot, "public", "timeline.json"),

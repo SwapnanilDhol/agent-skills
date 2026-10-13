@@ -15,9 +15,11 @@ What it took to get clean recordings for PassMaker. Assume a shared, busy Mac.
   Pro. Create a dedicated simulator for the promo
   (`xcrun simctl create "<App> Promo iPhone 18 Pro" …`) rather than borrowing
   another project's.
-- **State.** Pin the status bar (`simctl status_bar … --time 9:41 …`), force
-  premium/debug states via launch environment (`SIMCTL_CHILD_<KEY>=…`), and
-  dismiss one-time system UI off-camera: Photos "Private Access" banner,
+- **State.** Pin the status bar (`simctl status_bar … --time 9:41
+  --batteryState discharging --batteryLevel 100 …`; `charged` draws a green
+  charging bolt), force premium/debug states via launch environment
+  (`SIMCTL_CHILD_<KEY>=…`), and dismiss one-time system UI off-camera: Photos
+  "Private Access" banner,
   Wallet location prompt (iOS 26), "What's New in Wallet" (iOS 27).
 - **Test data.** Remove leftovers from exploration (an ugly AI-generated card
   sitting in Wallet showed up in the final list shot).
@@ -31,7 +33,13 @@ What it took to get clean recordings for PassMaker. Assume a shared, busy Mac.
   label inside a sheet never succeeds. For remote views (PassKit's Add to
   Wallet sheet) sample a pixel in a 3× screenshot instead (`wait_pixel`).
 - Debug "screenshot scene" launch flags often render a screen with no-op
-  handlers; go through the real navigation for anything you need to tap.
+  handlers and an inert tab bar, so each screen is its own launch; go through
+  the real navigation for anything you need to tap. Drill-downs from such a
+  scene (tapping a row) may read the real store, not the scene's fixed data,
+  and show the simulator's actual (often empty) data. Capture each screen
+  from its own scene instead of navigating.
+- `axe button home` is a no-op on Xcode 27.1. Press Home with the iOS
+  Simulator tool's `HOME` button instead.
 - After a cold launch, probe responsiveness (tap something harmless, confirm,
   undo) before starting the recorder.
 - Launching an app straight from another app adds a "◂ App" back link to the
@@ -45,11 +53,19 @@ What it took to get clean recordings for PassMaker. Assume a shared, busy Mac.
 
 ## Recording
 
+- **simctl can't write into ~/Desktop** (or other privacy-protected
+  folders). `simctl io recordVideo`/`screenshot` run inside CoreSimulator,
+  which fails with "You don't have permission" there; with stderr discarded
+  the recording just never appears. Both capture scripts write into
+  `mktemp -d` and copy/transcode into `public/`.
 - One short recording per scene (`rec_start` / `rec_stop`); set up state
   between recordings, not on camera.
 - `simctl io recordVideo` is variable-frame-rate and stops writing frames while
   the screen is still, so files can end early. Convert with `fps=30` and pad
   with `tpad=stop_mode=clone`.
+- `recordVideo` also drops frames during fast motion: a quick scroll
+  stutters in the render. Fake scrolls from two stills (`ScrollMock`, see
+  `styling.md`) and keep recordings for taps, sheets and transitions.
 - Don't poll screenshots during animations you want smooth; poll
   `axe describe-ui` (cheap) and keep screenshot probes to static waits.
 - Leave ~1 s of stillness at both ends of each recording for clean cuts.

@@ -5,12 +5,14 @@
   "type": "module",
   "scripts": {
     "capture": "scripts/capture-flow.sh",
+    "capture-screens": "scripts/capture-screens.sh",
     "prepare-assets": "node scripts/sync-assets.mjs && node scripts/build-timeline.mjs",
     "predev": "npm run prepare-assets",
     "dev": "remotion studio src/index.ts",
     "prerender": "npm run prepare-assets",
     "render": "remotion render src/index.ts Promo out/promo.mp4",
     "still": "npm run prepare-assets && remotion still src/index.ts Promo out/poster.png --frame=150",
+    "render-preview": "npm run prepare-assets && remotion render src/index.ts AppPreview out/app-preview-raw.mp4 && ffmpeg -y -loglevel error -i out/app-preview-raw.mp4 -c:v libx264 -profile:v high -pix_fmt yuv420p -r 30 -b:v 10M -c:a aac -b:a 256k -ar 44100 -ac 2 out/app-preview-886x1920.mp4",
     "typecheck": "tsc --noEmit",
     "source-photo": "swift scripts/make-qr.swift SOURCE-QR-PAYLOAD public/source-qr.png && remotion still src/index.ts SourcePhoto public/source-photo.jpg --image-format=jpeg --jpeg-quality=88"
   },
