@@ -1,0 +1,6 @@
+interface:
+  display_name: "Apple Refund Protection"
+  short_description: "Configure RevenueCat refund handling and App Store Server Notifications"
+  default_prompt: "Use $apple-refund-protection to set up refund handling for my apps."
+policy:
+  allow_implicit_invocation: false
