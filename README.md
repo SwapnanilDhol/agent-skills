@@ -12,6 +12,7 @@ agent-skills/
 │   └── analytics-instrumentation/
 ├── ios/                 # App Store Connect, Xcode, release workflows
 │   ├── app-promo-video/
+│   ├── apple-refund-protection/
 │   ├── asc-morning-brief/
 │   ├── app-attestation/
 │   ├── generate-app-store-screenshots/
@@ -37,6 +38,7 @@ agent-skills/
 | [`local-first-web-app`](web/local-first-web-app/) | Web | `/local-first-web-app` | IndexedDB persistence, migrations, offline behavior, local dates, backups, and browser-only reminders |
 | [`contribution-grid-ui`](web/contribution-grid-ui/) | Web | `/contribution-grid-ui` | Accessible GitHub-style contribution calendars and date-based heatmaps |
 | [`app-promo-video`](ios/app-promo-video/) | iOS | `/app-promo-video` | Remotion promo video: mocked AI/camera scenes ending on curated results, Simulator recordings in a drawn iPhone, beat-synced captions, synthesized music |
+| [`apple-refund-protection`](ios/apple-refund-protection/) | iOS | `/apple-refund-protection` | RevenueCat Refund Control policies, App Store Server Notification URLs via asc, and test-notification verification across apps |
 | [`asc-morning-brief`](ios/asc-morning-brief/) | iOS | `/asc-morning-brief` | App Store Connect morning executive brief (acquisition, revenue, crashes, ratings, release health) |
 | [`app-attestation`](ios/app-attestation/) | iOS | `/app-attestation` | App Attest-backed sessions, RevenueCat purchase binding, Worker verification, and staged rollout |
 | [`generate-app-store-screenshots`](ios/generate-app-store-screenshots/) | iOS | `/generate-app-store-screenshots` | Deterministic Simulator capture, widget staging, framing, review, validation, and App Store Connect upload |
