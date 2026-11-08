@@ -24,6 +24,11 @@ typography, cards, buttons, materials, settings rows, and haptic primitives.
    bug, iPad adaptation, permission/paywall change, or motion polish.
 6. Preserve user data and existing-user launch behavior during migration.
 
+For a concrete visual reference while reviewing geometry and rhythm, see the
+[Goaley iPhone onboarding catalog](references/visual-catalogs/goaley-iphone-onboarding.jpg)
+and [Goaley iPad onboarding catalog](references/visual-catalogs/goaley-ipad-onboarding.jpg).
+They are reference examples, not a product-specific template.
+
 ## Author the narrative first
 
 Use this shape:
