@@ -12,7 +12,7 @@ capabilities. The deterministic order is:
 2. enable every capability required by each development entitlements file;
 3. create or regenerate the ad hoc profiles;
 4. archive and export;
-5. inspect the signed artifact and OTA manifest.
+5. inspect the signed artifact.
 
 Creating the profile before enabling a capability produces a profile that
 cannot satisfy the app's entitlements. Re-running the same archive without
@@ -75,15 +75,14 @@ xcodebuild \
 
 Do not stop at a green Xcode Cloud status. Verify:
 
-- Xcode Cloud used the exact reserved source SHA;
-- the uploaded IPA bundle ID equals the development bundle ID;
-- the OTA manifest returns HTTP 200 and reports that same bundle ID;
-- the IPA endpoint returns HTTP 200 with a non-zero content length;
-- the development app installs beside the production app; and
-- the result and install link remain in the originating Slack thread.
+- Xcode Cloud used the exact recorded source SHA;
+- the downloaded IPA bundle ID equals the development bundle ID;
+- `verify-built-products.sh` passes for the downloaded app; and
+- the development app installs beside the production app with
+  `xcrun devicectl`.
 
 Record the App ID resource IDs, capability output, build ID, version/build,
-source SHA, manifest bundle ID, link expiry, development App Store Connect
+source SHA, IPA bundle ID, development App Store Connect
 app/product ID, workflow ID, and archive artifact ID in the app runbook. Never record
-private keys, bearer tokens, signed install tokens, or provisioning profile
+private keys, bearer tokens, signed download URLs, or provisioning profile
 contents.

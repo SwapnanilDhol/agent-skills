@@ -45,7 +45,7 @@ agent-skills/
 | [`iphone-duo-simulator`](ios/iphone-duo-simulator/) | iOS | `/iphone-duo-simulator` | Unattended iPhone Duo simulator control: Device Hub poses and rotation, cliclick taps with a device check, stable per-display captures, and recovery |
 | [`premium-onboarding`](ios/premium-onboarding/) | iOS | `/premium-onboarding` | Product narrative, adaptive iPhone/iPad layout, state architecture, motion, permissions, paywalls, accessibility, analytics, and QA for polished onboarding |
 | [`release-ios-app-locally`](ios/release-ios-app-locally/) | iOS | `/release-ios-app-locally` | App Store release: defer to an auto-starting Xcode Cloud archive when one exists, otherwise archive locally, then upload, validate, and tag |
-| [`two-bundle-id-workflow`](ios/two-bundle-id-workflow/) | iOS | `/two-bundle-id-workflow` | Deterministic Debug/Preview/Release identity and app-icon isolation, Apple signing, Xcode Cloud, Indie Ops delivery, and artifact verification |
+| [`two-bundle-id-workflow`](ios/two-bundle-id-workflow/) | iOS | `/two-bundle-id-workflow` | Deterministic Debug/Preview/Release identity and app-icon isolation, Apple signing, Xcode Cloud, registered-device Preview delivery, and artifact verification |
 
 ## Install
 
