@@ -4,10 +4,10 @@ description: >-
   Deterministically audit, bootstrap, migrate, and verify isolated iOS
   development and production identities across app targets, widgets,
   extensions, app groups, plists, URL schemes, development app icons,
-  services, Apple signing, Xcode Cloud, and Indie Ops delivery.
+  services, Apple signing, Xcode Cloud, and registered-device Preview delivery.
   Use when creating or reviewing a two-bundle-ID setup for a new or existing
   iOS app, preparing side-by-side development and App Store installs, or wiring
-  the signed Preview build into an Indie Ops/Slack delivery loop.
+  the signed Preview build into a manual Xcode Cloud device-preview loop.
 ---
 
 # Two-bundle-ID workflow
@@ -74,9 +74,9 @@ group.*              ↔ production companion entitlements
     IPA. Xcode Cloud requires a separate App Store Connect app record/product
     for the `.dev` bundle. If that record is not explicitly approved, keep the
     hosted Preview path disabled.
-13. If Slack delivery is required, follow
-    `references/xcode-cloud-handoff.md`, register the app in Indie Ops, and
-    run `scripts/verify-slack-preview-handoff.sh`.
+13. Record every Xcode Cloud product and workflow ID in the app runbook, follow
+    `references/xcode-cloud-handoff.md`, and run
+    `scripts/verify-preview-handoff.sh /path/to/app`.
 14. Build and inspect all three configurations. Run
     `scripts/verify-built-products.sh` against the resulting app bundles.
 15. Install the development and production apps together and execute the
@@ -120,5 +120,5 @@ Do not call an app complete unless the verifier passes, all companion targets
 are paired, the production settings match the pre-migration snapshot, the
 development icon passes the blueprint-style review and asset validation, both
 identities install side-by-side, the app runbook contains the evidence, and—if
-Slack delivery is in scope—the cross-repository handoff verifier and one real
-Slack-triggered artifact both pass.
+hosted Preview is enabled—the handoff verifier and one real Xcode Cloud Preview
+artifact installed on a registered device both pass.

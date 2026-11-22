@@ -69,11 +69,10 @@ watch target, App Intent extension, or other embedded target:
 - [ ] a deliberately approved unpublished App Store Connect app record/product
       exists for the development bundle before hosted Preview is enabled;
 - [ ] the Xcode Cloud device-preview workflow is manual/API-only and validates the
-      reserved source SHA before signing;
-- [ ] Indie Ops' app registry has the repository, Xcode Cloud team/workflow IDs,
-      exact development bundle ID, and the correct preview enablement state;
-- [ ] the app has a Slack `releases` route and the cross-repository handoff
-      verifier passes.
+      recorded source SHA before signing;
+- [ ] the app runbook records the Xcode Cloud products, workflow IDs, Preview
+      scheme, exact development bundle ID, and the Preview enablement state; and
+- [ ] `verify-preview-handoff.sh` passes.
 
 ## Verification
 
@@ -85,11 +84,12 @@ watch target, App Intent extension, or other embedded target:
 - [ ] Release archive/validation passes;
 - [ ] `verify-built-products.sh` passes for all three artifacts;
 - [ ] codesigned entitlements are inspected for app and companions;
-- [ ] the OTA manifest reports the development bundle ID and the IPA endpoint
-      returns HTTP 200 before the install link is announced;
+- [ ] the downloaded Preview IPA reports the development bundle ID before it is
+      installed;
 - [ ] development and production install side-by-side;
 - [ ] development data, widgets, links and notifications do not reach the
       production containers; and
 - [ ] the Release identity and settings match the pre-migration snapshot.
-- [ ] one real top-level `Build latest main device preview` Slack request
-      reaches `ready` for the exact remote `main` SHA and replies in that thread.
+- [ ] when Preview is enabled, one real `asc xcode-cloud run` Preview build of
+      the exact remote `main` SHA installs on a registered device with
+      `xcrun devicectl`.

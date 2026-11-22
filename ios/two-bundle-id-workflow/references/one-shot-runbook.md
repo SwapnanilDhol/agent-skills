@@ -13,13 +13,13 @@ CLIs. Record:
 - Xcode project/workspace, app scheme, app target, and companion targets;
 - production bundle ID, display name, app group, URL schemes, entitlements,
   icons, and service configuration;
-- desired app slug and Slack releases channel;
-- sibling Indie Ops repository path, when Slack delivery is in scope; and
-- availability of `xcodebuild`, `asc`, Xcode Cloud, GitHub access,
-  Cloudflare deployment access, and authenticated Slack.
+- desired app slug;
+- registered test devices for Preview installs (`xcrun devicectl list devices`); and
+- availability of `xcodebuild`, `asc`, `devicectl`, Xcode Cloud, and GitHub
+  access.
 
 Do not ask for secret values. Check whether required secret names exist in
-Xcode Cloud and Indie Ops. If an interactive authentication or account decision is genuinely
+Xcode Cloud. If an interactive authentication or account decision is genuinely
 required, finish every non-blocked phase first, then request exactly one action.
 
 ## 1. Freeze production evidence
@@ -90,7 +90,7 @@ capabilities before creating profiles. Create or regenerate `IOS_APP_ADHOC`
 profiles with all test devices. Follow `apple-signing-and-capabilities.md` and
 record resource IDs and capability names—not profile contents or keys.
 
-## 5. Configure Xcode Cloud and Slack delivery
+## 5. Configure Xcode Cloud and device-preview delivery
 
 Release uses the production identity. Preview uses the development identity.
 
@@ -101,28 +101,23 @@ When device preview delivery is requested:
    hosted Preview disabled and continue with production Xcode Cloud migration.
 2. Commit a shared Preview scheme and deterministic archive/export script
    satisfying `xcode-cloud-handoff.md`.
-3. Configure Xcode Cloud workflow IDs and webhook secrets; never duplicate
-   secret values in source or documentation.
-4. Update Indie Ops `config/apps.json`, add the app's releases-channel D1
-   migration, apply migrations, test, and deploy.
-5. Run `verify-slack-preview-handoff.sh` across both repositories.
+3. Create the Xcode Cloud workflows and record their IDs, the products, and
+   the Preview scheme in the app runbook; never duplicate secret values in
+   source or documentation.
+4. Run `verify-preview-handoff.sh /path/to/app`.
 
 Do not declare success from static configuration alone.
 
 ## 6. Commit and live acceptance
 
-Commit the app and Indie Ops changes, push the intended branch, and ensure the
-remote SHA equals the one to be built. In the app's Slack releases channel,
-post a new top-level message:
+Commit the app changes, push the intended branch, and ensure the remote SHA
+equals the one to be built. Start one Preview run with `asc xcode-cloud run`,
+download its artifact, and install it with `xcrun devicectl` as described in
+`xcode-cloud-handoff.md`.
 
-```text
-Build latest main device preview
-```
-
-Verify one Xcode Cloud run, the exact reserved source SHA, the development bundle
-ID in the IPA and OTA manifest, HTTP 200 for landing/manifest/IPA, side-by-side
-installation, and start/result replies in the originating thread. Never record
-signed install tokens.
+Verify one Xcode Cloud run for the exact recorded source SHA, the development
+bundle ID in the downloaded IPA, a passing `verify-built-products.sh`, and
+side-by-side installation. Never record signed download URLs.
 
 ## Stop conditions
 
@@ -134,7 +129,7 @@ Stop and report a named blocker rather than weakening isolation when:
 - a companion target cannot be paired;
 - RevenueCat/StoreKit policy is unspecified;
 - profiles omit the device or required capability;
-- Xcode Cloud would build an unreserved SHA; or
+- Xcode Cloud would build a SHA other than the recorded one; or
 - the artifact resolves to the production bundle ID.
 
 Completion means every checkbox in `implementation-checklist.md` is backed by

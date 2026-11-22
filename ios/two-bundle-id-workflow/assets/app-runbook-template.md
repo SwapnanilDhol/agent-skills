@@ -2,7 +2,8 @@
 
 This is the durable source of truth for the development/production identity
 split. Never record secrets, private keys, bearer tokens, signed install URLs,
-provisioning-profile contents, or dashboard passwords here.
+provisioning-profile contents, or dashboard passwords here. It is also the
+registry `verify-preview-handoff.sh` reads, so keep the field labels below.
 
 ## Scope
 
@@ -53,7 +54,7 @@ Add one row per companion target and configuration.
 
 Registered test devices: `TODO names/UDID suffixes only`
 
-## Xcode Cloud and Slack
+## Xcode Cloud
 
 - Production Xcode Cloud app/product ID: `TODO`
 - PR verification workflow ID: `TODO`
@@ -61,9 +62,6 @@ Registered test devices: `TODO names/UDID suffixes only`
 - Development Xcode Cloud app/product ID, or `not approved`: `TODO`
 - Preview workflow ID, or `disabled`: `TODO`
 - Preview scheme: `TODO`
-- Slack releases channel ID: `TODO`
-- Indie Ops registry entry: `TODO path/commit`
-- Slack route migration: `TODO path/commit`
 
 ## Deterministic verification
 
@@ -75,21 +73,18 @@ Registered test devices: `TODO names/UDID suffixes only`
 | Preview unsigned archive | `xcodebuild ... Preview` | TODO |
 | Release unsigned archive | `xcodebuild ... Release` | TODO |
 | Built-product verifier | `verify-built-products.sh` | TODO |
-| Cross-repo handoff | `verify-slack-preview-handoff.sh` | TODO |
+| Xcode Cloud handoff | `verify-preview-handoff.sh` | TODO |
 
 ## Live acceptance
 
-- Slack root message timestamp/link: `TODO`
-- Reserved source SHA: `TODO`
-- Xcode Cloud build/artifact ID: `TODO`
+- Source SHA: `TODO`
+- Xcode Cloud build run/artifact ID: `TODO`
 - Version/build: `TODO`
 - IPA bundle ID: `TODO`
 - Artifact bytes/SHA-256: `TODO`
-- Landing/manifest/IPA HTTP status: `TODO`
-- Manifest bundle ID: `TODO`
-- Artifact expiry: `TODO`
+- `verify-built-products.sh` result: `TODO`
+- Registered device (name/UDID suffix): `TODO`
 - Side-by-side device installation: `TODO`
-- Same-thread start/result replies: `TODO`
 
 ## Completion checklist
 

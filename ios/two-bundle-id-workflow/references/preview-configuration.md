@@ -15,14 +15,15 @@ ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon-Dev
 
 The Xcode Cloud Preview workflow must archive Preview with registered-device
 profiles for the main app and every embedded target. It must check the source
-SHA, inspect the bundle ID/version/build, upload only to the private preview
-storage service, and report the result to the originating workflow. It must not
-run the TestFlight upload/tagging path.
+SHA, inspect the bundle ID/version/build, and keep the exported artifact in
+Xcode Cloud for authenticated download. It must not run the TestFlight
+upload/tagging path.
 
 Xcode Cloud requires an unpublished App Store Connect app record/product for
-the development bundle ID. Archive artifacts must be downloaded and handed to
-Indie Ops/R2 because Xcode Cloud does not provide the app's private OTA landing
-page. Keep the remote Preview command disabled until that entire path is proven.
+the development bundle ID. Download the exported ad hoc artifact with
+`asc xcode-cloud artifacts download` and install it with `xcrun devicectl`
+(see `xcode-cloud-handoff.md`). Keep the Preview workflow disabled in the
+runbook until that entire path is proven.
 
 Never silently create a development App Store Connect record. Record that
 account-level choice in the app runbook first.
